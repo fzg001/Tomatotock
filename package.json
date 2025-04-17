@@ -1,6 +1,6 @@
 {
   "name": "tomatotock",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A Pomodoro timer for Windows taskbar using Electron",
   "main": "src/main.js",
   "scripts": {

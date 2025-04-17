@@ -164,6 +164,8 @@ function stopTimer(goIdle = true) {
         workSessionCounter = 0;
     }
     updateDisplay();
+    // 主动释放引用
+    // 不需要清理 UI 元素引用（页面不销毁），但可以清理临时变量
 }
 
 function startTimer(type) {
@@ -311,8 +313,30 @@ function applyTranslations() {
 }
 
 // --- Event Listeners ---
-startPauseButton.addEventListener('click', togglePauseResume);
-resetButton.addEventListener('click', resetCurrentTimer);
+// 只绑定一次，避免重复绑定
+if (!window._tomatotockEventBound) {
+    startPauseButton.addEventListener('click', togglePauseResume);
+    resetButton.addEventListener('click', resetCurrentTimer);
+    window._tomatotockEventBound = true;
+}
+
+// 页面卸载时移除事件监听，释放资源
+window.addEventListener('beforeunload', () => {
+    startPauseButton.removeEventListener('click', togglePauseResume);
+    resetButton.removeEventListener('click', resetCurrentTimer);
+    // 释放音频资源
+    if (audioPlayer) {
+        audioPlayer.pause();
+        audioPlayer.src = '';
+    }
+});
+
+// 音频播放结束时释放资源
+if (audioPlayer) {
+    audioPlayer.addEventListener('ended', () => {
+        audioPlayer.src = '';
+    });
+}
 
 // --- IPC Listeners ---
 ipcRenderer.on('initialize-data', (event, { settings, localeData }) => {
