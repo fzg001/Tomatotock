@@ -33,6 +33,7 @@ let isPaused = false;
 let isTickingSoundPlaying = false;
 let currentTimerType = 'work'; // Track which timer duration is set
 let currentLocaleData = {}; // Store loaded locale data
+let currentSettings = {}; // Store full settings object
 let workSessionCounter = 0; // Counter for long break cycle
 
 // --- Translation Helper ---
@@ -61,10 +62,15 @@ function playSound(soundPath, loop = false) {
         audioPlayer.currentTime = 0;
         isTickingSoundPlaying = false;
     }
-    if (audioPlayer.src !== soundPath || audioPlayer.paused) {
+    if (!audioPlayer.src || !audioPlayer.src.includes(path.basename(soundPath)) || audioPlayer.paused) {
         audioPlayer.src = soundPath;
         audioPlayer.loop = loop;
         audioPlayer.play().catch(e => console.error("Error playing sound:", e));
+    } else if (audioPlayer.src.includes(path.basename(soundPath)) && loop && !audioPlayer.loop) {
+        audioPlayer.loop = loop;
+        if (audioPlayer.paused) {
+            audioPlayer.play().catch(e => console.error("Error playing sound:", e));
+        }
     }
     isTickingSoundPlaying = (soundPath === sounds.tick && loop);
 }
@@ -142,12 +148,17 @@ function startTimer(type) {
 
     console.log(`Starting timer: ${type}, Duration: ${remainingTime}s, Session: ${workSessionCounter}`);
 
-    playSound(sounds.start);
+    // Only play start sound for work sessions and if enabled
+    if (type === 'work' && enableCompletionSoundSetting) {
+        playSound(sounds.start);
+    }
+
+    // Start ticking sound after a delay ONLY for work sessions and if enabled
     setTimeout(() => {
-        if (currentState !== 'idle' && !isPaused) {
+        if (currentState === 'work' && !isPaused && enableTickingSoundSetting) {
             playSound(sounds.tick, true);
         }
-    }, 1000);
+    }, 1000); // Delay ticking sound slightly
 
     startInterval();
     updateDisplay();
@@ -166,7 +177,10 @@ function togglePauseResume() {
             console.log('Timer paused');
         } else {
             console.log('Timer resumed');
-            playSound(sounds.tick, true);
+            // Only resume ticking sound for work sessions and if enabled
+            if (currentState === 'work' && enableTickingSoundSetting) {
+                playSound(sounds.tick, true);
+            }
             startInterval();
         }
         updateDisplay();
@@ -182,51 +196,113 @@ function startInterval() {
         updateDisplay();
 
         if (remainingTime <= 0) {
-            playSound(sounds.complete);
+            // 1. 停止当前的 Interval
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            // 2. 如果滴答声在播放，停止它
+            if (isTickingSoundPlaying) {
+                stopSound(); // isTickingSoundPlaying 会被设为 false
+            }
 
             let nextStateType = 'idle';
+            let playCompleteSound = false; // 用于标记是否需要播放完成音效
 
             if (currentState === 'work') {
+                // 标记需要播放完成音效（如果设置允许）
+                if (enableCompletionSoundSetting) {
+                    playCompleteSound = true;
+                }
                 workSessionCounter++;
                 console.log(`Work session ${workSessionCounter} completed.`);
 
-                // Check if we should pause instead of auto-starting break
+                // 3. 检查是否设置了工作后暂停
                 if (pauseAfterWorkSetting) {
                     console.log('Pausing after work session as per setting.');
-                    stopTimer(false); // Stop interval, keep state for display
-                    isPaused = true; // Set paused flag
-                    // Determine next state but don't start it
+                    isPaused = true; // 设置暂停状态
+                    // 确定下一个计时器类型（用于显示）
                     if (workSessionCounter >= longBreakIntervalSetting) {
                         currentTimerType = 'longrest';
-                        workSessionCounter = 0; // Reset counter as the *next* state is long break
                     } else {
                         currentTimerType = 'shortrest';
                     }
-                    remainingTime = timers[currentTimerType]; // Set time for next state display
-                    updateDisplay(); // Update UI to show paused state and next timer duration
-                    return; // Exit interval callback
+                    remainingTime = timers[currentTimerType]; // 设置剩余时间为下一个计时器的时长
+                    // currentState 保持 'work' 直到用户手动继续或重置
+                    updateDisplay(); // 更新显示为暂停状态
+
+                    // 在返回前播放完成音效
+                    if (playCompleteSound) {
+                        playSound(sounds.complete);
+                    }
+
+                    // 发送通知 (如果启用)
+                    if (currentSettings.enableNotifications) {
+                        ipcRenderer.send('show-notification', {
+                            title: translate('notification_work_complete_title'),
+                            body: translate('notification_work_complete_body', { next_state: translate(`state_${currentTimerType}`) })
+                        });
+                    }
+                    return; // 退出 Interval 回调，等待用户操作
                 }
 
-                // Original auto-start logic (if not pausing)
+                // 4. 如果不暂停，确定下一个状态（自动开始休息）
                 if (workSessionCounter >= longBreakIntervalSetting) {
                     nextStateType = 'longrest';
                     console.log('Starting long break.');
-                    workSessionCounter = 0;
                 } else {
                     nextStateType = 'shortrest';
                     console.log('Starting short break.');
                 }
-            } else {
-                nextStateType = 'work';
+                // 发送通知 (如果启用)
+                if (currentSettings.enableNotifications) {
+                    ipcRenderer.send('show-notification', {
+                        title: translate('notification_work_complete_title'),
+                        body: translate('notification_work_complete_body_auto', { next_state: translate(`state_${nextStateType}`) })
+                    });
+                }
+
+            } else { // 当前是休息状态 ('shortrest' or 'longrest')
+                // 休息结束，不播放完成音效
+                if (currentState === 'longrest') {
+                    workSessionCounter = 0; // 长休息结束后重置计数器
+                    console.log('Long break finished. Resetting work session counter.');
+                } else {
+                    console.log('Short break finished.');
+                }
+                nextStateType = 'work'; // 下一个状态是工作
                 console.log('Starting work session.');
+                // 发送通知 (如果启用)
+                if (currentSettings.enableNotifications) {
+                    ipcRenderer.send('show-notification', {
+                        title: translate('notification_break_complete_title'),
+                        body: translate('notification_break_complete_body')
+                    });
+                }
             }
 
-            stopTimer(false);
+            // 5. 播放工作完成音效（如果标记了）
+            //    此时 Interval 已停止，滴答声已停止，不会被立即中断
+            if (playCompleteSound) {
+                playSound(sounds.complete);
+            }
 
-            // Automatically start the next timer (only if not paused above)
+            // 6. 重置暂停状态（以防万一）并准备启动下一个计时器
+            isPaused = false; // 确保不是暂停状态
+
+            // 7. 延迟后自动启动下一个计时器
             setTimeout(() => {
-                startTimer(nextStateType);
-            }, 1500);
+                // 确保在延迟期间没有其他操作改变状态
+                if (!isPaused && currentState !== 'idle') {
+                     startTimer(nextStateType);
+                } else if (currentState === 'idle') {
+                    // 如果在延迟期间被重置了，则不自动启动
+                    console.log('Timer was reset during transition delay. Not starting next state.');
+                } else {
+                     // 如果在延迟期间被暂停了 (理论上不应该发生在此流程中，除非有其他代码干预)
+                     console.log('Timer was paused during transition delay. Not starting next state automatically.');
+                }
+            }, 1500); // 短暂延迟
         }
     }, 1000);
 }
@@ -254,11 +330,12 @@ resetButton.addEventListener('click', resetCurrentTimer);
 ipcRenderer.on('initialize-data', (event, { settings, localeData }) => {
     console.log('Received initial data:', settings);
     currentLocaleData = localeData;
+    currentSettings = settings; // Store the full settings object
     timers = settings.timers;
     longBreakIntervalSetting = settings.longBreakInterval;
     enableCompletionSoundSetting = settings.enableCompletionSound;
     enableTickingSoundSetting = settings.enableTickingSound;
-    pauseAfterWorkSetting = settings.pauseAfterWork; // Load new setting
+    pauseAfterWorkSetting = settings.pauseAfterWork;
     remainingTime = timers[currentTimerType];
 
     applyTranslations();
@@ -268,12 +345,13 @@ ipcRenderer.on('initialize-data', (event, { settings, localeData }) => {
 ipcRenderer.on('settings-updated', (event, { settings, localeData }) => {
     console.log('Received settings update:', settings);
     currentLocaleData = localeData;
+    currentSettings = settings; // Store the full settings object
     const oldTimers = { ...timers };
     timers = settings.timers;
     longBreakIntervalSetting = settings.longBreakInterval;
     enableCompletionSoundSetting = settings.enableCompletionSound;
     enableTickingSoundSetting = settings.enableTickingSound;
-    pauseAfterWorkSetting = settings.pauseAfterWork; // Update new setting
+    pauseAfterWorkSetting = settings.pauseAfterWork;
 
     if (currentState === 'idle' || isPaused) {
         if (oldTimers[currentTimerType] !== timers[currentTimerType]) {
