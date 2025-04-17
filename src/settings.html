@@ -130,7 +130,7 @@
             line-height: 30px; /* Match button/input height */
             padding-left: 5px; /* Small padding for separation */
             min-width: 50px; /* Ensure span doesn't collapse too much */
-            margin-right: 8px; /* 调整与删除按钮的距离 */
+            margin-right: 0; /* 调整边距，让移除按钮紧贴 */
         }
         .file-select-group button.remove-sound-button { /* Style for remove button */
             flex-shrink: 0;
@@ -144,11 +144,8 @@
             border-radius: 4px;
             cursor: pointer;
             display: none; /* 默认隐藏，有文件时才显示 */
-            visibility: visible !important; /* 确保可见性 */
-            opacity: 1 !important; /* 确保不透明 */
-            margin-left: auto;
-            position: static !important; /* 防止定位问题 */
-            z-index: 10; /* 确保在顶层 */
+            margin-left: 5px;
+            transition: background-color 0.2s ease; /* 平滑过渡 */
         }
         .file-select-group button.remove-sound-button:hover {
             background-color: #f9d7d7;
@@ -277,7 +274,7 @@
 
         <!-- 通用 Tab -->
         <div id="tab-general" class="tab-content">
-             <div class="form-group">
+            <div class="form-group">
                 <label for="language-select" data-translate="settings_language">语言:</label>
                 <div class="control">
                     <select id="language-select">
@@ -286,13 +283,13 @@
                     </select>
                 </div>
             </div>
-             <div class="form-group">
+            <div class="form-group">
                 <label for="launch-at-login" data-translate="settings_launch_at_login">登录时启动:</label>
                 <div class="control">
                     <input type="checkbox" id="launch-at-login">
                 </div>
             </div>
-             <div class="form-group">
+            <div class="form-group">
                 <label for="pause-after-work" data-translate="settings_pause_after_work">工作结束后暂停:</label>
                 <div class="control">
                     <input type="checkbox" id="pause-after-work">
