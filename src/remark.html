@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>番茄备注</title>
+    <style>
+        body { margin:0; background:#fff; font-family:sans-serif; }
+        .remark-box { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; }
+        input[type="text"] { width:90%; font-size:16px; padding:8px; margin-bottom:10px; }
+        button { font-size:14px; padding:6px 18px; }
+    </style>
+</head>
+<body>
+    <div class="remark-box">
+        <input type="text" id="remark-input" placeholder="为本次番茄工作做个备注..." autofocus />
+        <button id="remark-ok">确定</button>
+    </div>
+    <script>
+        const { ipcRenderer } = require('electron');
+        const input = document.getElementById('remark-input');
+        document.getElementById('remark-ok').onclick = () => {
+            ipcRenderer.send('remark-save', input.value);
+        };
+        input.onkeydown = e => {
+            if (e.key === 'Enter') {
+                ipcRenderer.send('remark-save', input.value);
+            }
+            if (e.key === 'Escape') {
+                window.close();
+            }
+        };
+        setTimeout(() => input.focus(), 100);
+    </script>
+</body>
+</html>

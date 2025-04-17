@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain, screen, Notification, dialog } = require('electron'); // 添加 dialog
+const { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain, screen, Notification, dialog, globalShortcut } = require('electron'); // 添加 dialog 和 globalShortcut
 const path = require('path');
 const Store = require('electron-store');
 const fs = require('fs');
@@ -14,13 +14,16 @@ const store = new Store({
         longBreakInterval: 4,
         enableCompletionSound: true,
         enableTickingSound: true,
-        // 新增：自定义声音路径
         customSoundStart: '',
         customSoundTick: '',
         customSoundComplete: '',
         pauseAfterWork: false,
         enableNotifications: true,
         launchAtLogin: false,
+        enableHotkeys: true, // 新增快捷键设置
+        hotkeyStartPause: 'Ctrl+Alt+P',
+        hotkeyReset: 'Ctrl+Alt+R',
+        enableStats: true, // 新增统计功能开关
         language: 'zh',
         appearance: {
             cardBg: '#f0f0f0',
@@ -40,14 +43,17 @@ const store = new Store({
     }
 });
 
+let statsStore = new Store({ name: 'stats', defaults: { records: [] } }); // 统计数据存储
+
 // --- Globals ---
 let tray = null;
 let flyoutWindow = null;
 let settingsWindow = null;
+let statsWindow = null;
 let currentTimerState = { state: 'idle', timeLeft: 0 };
 let currentSettings = store.get(); // Load initial settings
 let currentLocaleData = {};
-let lastTrayState = null; // 新增变量，记录上一次的状态
+let lastTrayState = null;
 
 // --- Load Locale Data ---
 function loadLocaleData(lang) {
@@ -108,7 +114,6 @@ function createFlyoutWindow() {
     flyoutWindow.loadFile(path.join(__dirname, 'index.html'));
 
     flyoutWindow.webContents.on('did-finish-load', () => {
-        // 确保发送完整的 currentSettings
         flyoutWindow.webContents.send('initialize-data', { settings: currentSettings, localeData: currentLocaleData });
     });
 
@@ -130,8 +135,8 @@ function createSettingsWindow() {
     }
 
     settingsWindow = new BrowserWindow({
-        width: 480, // Increased width
-        height: 460, // Increased height
+        width: 480,
+        height: 460,
         resizable: false,
         fullscreenable: false,
         modal: true,
@@ -150,6 +155,34 @@ function createSettingsWindow() {
 
     settingsWindow.on('closed', () => {
         settingsWindow = null;
+    });
+}
+
+function createStatsWindow() {
+    if (statsWindow) {
+        statsWindow.focus();
+        return;
+    }
+
+    statsWindow = new BrowserWindow({
+        width: 480,
+        height: 520,
+        resizable: false,
+        modal: true,
+        show: true,
+        parent: flyoutWindow,
+        autoHideMenuBar: true,
+        webPreferences: {
+            nodeIntegration: true,
+            contextIsolation: false,
+        },
+        icon: icons.appIcon
+    });
+
+    statsWindow.loadFile(path.join(__dirname, 'stats.html'));
+
+    statsWindow.on('closed', () => {
+        statsWindow = null;
     });
 }
 
@@ -173,6 +206,7 @@ function createTray() {
 function buildContextMenu() {
     const contextMenuTemplate = [
         { label: translate('menu_show_hide'), click: () => toggleWindow(tray.getBounds()) },
+        { label: translate('menu_stats'), click: createStatsWindow }, // 新增统计菜单
         { label: translate('menu_settings'), click: createSettingsWindow },
         { type: 'separator' },
         { label: translate('menu_quit'), click: () => app.quit() }
@@ -216,7 +250,6 @@ function toggleWindow(bounds) {
 
 // --- App Lifecycle ---
 app.whenReady().then(() => {
-    // --- 新增：开发环境下确保 Windows 通知可用 ---
     if (process.platform === 'win32') {
         app.setAppUserModelId(process.execPath);
     }
@@ -242,6 +275,7 @@ app.whenReady().then(() => {
     loadLocaleData(currentSettings.language);
     createFlyoutWindow();
     createTray();
+    registerGlobalShortcuts(currentSettings); // 注册快捷键
 
     if (process.platform === 'darwin') {
         app.dock.hide();
@@ -250,11 +284,31 @@ app.whenReady().then(() => {
 
 app.on('window-all-closed', () => {});
 
+app.on('will-quit', () => {
+    globalShortcut.unregisterAll(); // 注销快捷键
+});
+
+// --- 注册全局快捷键 ---
+function registerGlobalShortcuts(settings) {
+    const { globalShortcut } = require('electron');
+    globalShortcut.unregisterAll();
+    if (!settings.enableHotkeys) return;
+    if (settings.hotkeyStartPause) {
+        globalShortcut.register(settings.hotkeyStartPause, () => {
+            if (flyoutWindow) flyoutWindow.webContents.send('hotkey-start-pause');
+        });
+    }
+    if (settings.hotkeyReset) {
+        globalShortcut.register(settings.hotkeyReset, () => {
+            if (flyoutWindow) flyoutWindow.webContents.send('hotkey-reset');
+        });
+    }
+}
+
 // --- IPC Handling ---
 ipcMain.on('timer-update', (event, newState) => {
     currentTimerState = newState;
     if (tray) {
-        // 只有状态变化时才更新图标
         if (lastTrayState !== newState.state) {
             const icon = icons[newState.state] || icons.idle;
             tray.setImage(icon);
@@ -270,37 +324,33 @@ ipcMain.on('close-flyout', () => {
     }
 });
 
-// 处理获取设置和本地化数据的请求
 ipcMain.handle('get-settings-and-locale', async (event) => {
-    // 确保返回最新的 currentSettings
     return { settings: currentSettings, localeData: currentLocaleData };
 });
 
-// 新增：处理文件选择请求
 ipcMain.handle('select-file', async (event) => {
-    const result = await dialog.showOpenDialog(settingsWindow, { // 将 settingsWindow 作为父窗口
-        title: translate('settings_select_file'), // 使用翻译后的标题
+    const result = await dialog.showOpenDialog(settingsWindow, {
+        title: translate('settings_select_file'),
         properties: ['openFile'],
         filters: [
-            { name: 'Audio Files', extensions: ['wav'] } // 限制为 WAV 文件
+            { name: 'Audio Files', extensions: ['wav'] }
         ]
     });
     if (!result.canceled && result.filePaths.length > 0) {
-        return result.filePaths[0]; // 返回选择的文件路径
+        return result.filePaths[0];
     }
-    return null; // 如果取消或未选择文件，则返回 null
+    return null;
 });
 
-// 处理保存设置的请求
 ipcMain.on('save-settings', (event, newSettings) => {
     console.log('正在保存设置:', newSettings);
-    // 确保所有预期的键都存在，特别是布尔值和新添加的字段
+    // 修正：不要用 ...store.defaults，应该用 store.get() 或直接合并默认对象
     const completeSettings = {
-        ...store.defaults, // 从默认值开始
-        ...newSettings     // 用提供的新设置覆盖
+        ...store.get(), // 用当前存储的设置为基础
+        ...newSettings
     };
-    store.set(completeSettings); // 持久化完整的设置对象
-    currentSettings = completeSettings; // 更新内存中的设置
+    store.set(completeSettings);
+    currentSettings = completeSettings;
 
     try {
         const appPath = app.isPackaged ? process.execPath : app.getPath('exe');
@@ -317,19 +367,18 @@ ipcMain.on('save-settings', (event, newSettings) => {
         console.error('Failed to update login item settings:', error);
     }
 
-    // 如果语言更改，重新加载本地化数据并更新菜单
-    if (currentLocaleData.language !== newSettings.language) { // 比较之前的语言和新设置的语言
+    if (currentLocaleData.language !== newSettings.language) {
         loadLocaleData(newSettings.language);
-        buildContextMenu(); // 重新构建菜单以应用新语言
+        buildContextMenu();
     }
 
-    // 通知渲染进程设置已更新，发送完整的设置对象
+    registerGlobalShortcuts(currentSettings); // 重新注册快捷键
+
     if (flyoutWindow && !flyoutWindow.isDestroyed()) {
         flyoutWindow.webContents.send('settings-updated', { settings: currentSettings, localeData: currentLocaleData });
     }
 });
 
-// IPC handler for showing notifications from renderer
 ipcMain.on('show-notification', (event, { title, body }) => {
     console.log('[通知调试] 收到 show-notification:', { title, body });
     if (!body || typeof body !== 'string' || body.trim() === '') {
@@ -342,7 +391,6 @@ ipcMain.on('show-notification', (event, { title, body }) => {
                 title: 'Tomatotock',
                 body: body,
                 icon: icons.appIcon,
-                // silent: !currentSettings.enableCompletionSound // 可注释掉，避免被系统静音
             });
             notification.show();
             console.log('[通知调试] Notification.show() 已调用');
@@ -352,6 +400,24 @@ ipcMain.on('show-notification', (event, { title, body }) => {
     } else {
         console.log('[通知调试] Notifications not supported on this system.');
     }
+});
+
+// 修改 work-session-complete，仅保存 type/timestamp，不保存备注和时间段
+ipcMain.on('work-session-complete', (event, { remark }) => {
+    if (!currentSettings.enableStats) return;
+    const now = Date.now();
+    let record = {
+        type: 'work',
+        timestamp: new Date(now).toISOString()
+    };
+    statsStore.set('records', [
+        ...statsStore.get('records'),
+        record
+    ]);
+});
+
+ipcMain.handle('get-stats', () => {
+    return statsStore.get('records');
 });
 
 // Helper to update tooltip based on stored state

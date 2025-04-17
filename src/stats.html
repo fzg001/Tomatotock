@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>番茄统计</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif;
+            background: #f7f7fa;
+            margin: 0;
+        }
+        .stats-header {
+            background: #fff;
+            padding: 24px 0 12px 0;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        }
+        .stats-header h2 {
+            margin-bottom: 8px;
+            font-size: 22px;
+            color: #d9534f;
+            letter-spacing: 2px;
+        }
+        .stats-summary {
+            font-size: 15px;
+            color: #333;
+            margin-bottom: 6px;
+        }
+        .stats-summary span {
+            display: inline-block;
+            margin: 0 12px;
+            font-weight: bold;
+        }
+        .stats-list {
+            max-height: 380px;
+            overflow-y: auto;
+            margin: 24px 0 0 0;
+            padding: 0 18px 18px 18px;
+        }
+        .stats-item {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(220,53,69,0.07);
+            margin-bottom: 18px;
+            padding: 16px 18px 12px 18px;
+            display: flex;
+            flex-direction: column;
+            transition: box-shadow 0.2s;
+            border-left: 5px solid #d9534f;
+        }
+        .stats-item .row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .stats-item .row .label {
+            color: #888;
+            font-size: 13px;
+            min-width: 60px;
+        }
+        .stats-item .row .value {
+            color: #333;
+            font-size: 15px;
+            margin-left: 8px;
+            font-weight: 500;
+        }
+        .no-records {
+            text-align: center;
+            color: #bbb;
+            margin-top: 60px;
+            font-size: 16px;
+        }
+        /* 滚动条美化 */
+        .stats-list::-webkit-scrollbar {
+            width: 8px;
+            background: #f0f0f0;
+        }
+        .stats-list::-webkit-scrollbar-thumb {
+            background: #e0e0e0;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="stats-header">
+        <h2>番茄统计</h2>
+        <div class="stats-summary" id="stats-summary"></div>
+    </div>
+    <div class="stats-list" id="stats-list"></div>
+    <script>
+        const { ipcRenderer } = require('electron');
+        function pad(n) { return n < 10 ? '0' + n : n; }
+        function formatTime(ts) {
+            if (!ts) return '';
+            const d = new Date(ts);
+            return pad(d.getHours()) + ':' + pad(d.getMinutes());
+        }
+        function getDayStart(ts) {
+            const d = new Date(ts);
+            d.setHours(0,0,0,0);
+            return d.getTime();
+        }
+        function getWeekStart(ts) {
+            const d = new Date(ts);
+            d.setHours(0,0,0,0);
+            d.setDate(d.getDate() - d.getDay());
+            return d.getTime();
+        }
+        ipcRenderer.invoke('get-stats').then(records => {
+            if (!records || !records.length) {
+                document.getElementById('stats-list').innerHTML = '<div class="no-records">暂无番茄记录</div>';
+                document.getElementById('stats-summary').innerHTML = '';
+                return;
+            }
+            // 统计
+            const now = Date.now();
+            const todayStart = getDayStart(now);
+            const weekStart = getWeekStart(now);
+            let todayCount = 0, weekCount = 0;
+            records.forEach(r => {
+                const st = Date.parse(r.timestamp);
+                if (st >= todayStart) {
+                    todayCount++;
+                }
+                if (st >= weekStart) {
+                    weekCount++;
+                }
+            });
+            document.getElementById('stats-summary').innerHTML =
+                `<span>今日番茄：${todayCount} 个</span>
+                 <span>本周番茄：${weekCount} 个</span>`;
+            // 列表
+            let idx = records.length;
+            document.getElementById('stats-list').innerHTML = records.slice().reverse().map(r => {
+                const st = Date.parse(r.timestamp);
+                const et = st + 25 * 60000;
+                return `<div class="stats-item">
+                    <div class="row"><span class="label">#${idx--}</span>
+                        <span class="value">${formatTime(st)} - ${formatTime(et)}</span>
+                        <span class="label" style="margin-left:18px;">用时</span>
+                        <span class="value">25 分钟</span>
+                    </div>
+                </div>`;
+            }).join('');
+        });
+    </script>
+</body>
+</html>

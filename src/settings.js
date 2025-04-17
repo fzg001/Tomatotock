@@ -20,6 +20,10 @@ const removeSoundCompleteButton = document.getElementById('remove-sound-complete
 const languageSelect = document.getElementById('language-select');
 const launchAtLoginCheckbox = document.getElementById('launch-at-login'); // New
 const pauseAfterWorkCheckbox = document.getElementById('pause-after-work'); // New
+const enableStatsCheckbox = document.getElementById('enable-stats');
+const enableHotkeysCheckbox = document.getElementById('enable-hotkeys');
+const hotkeyStartPauseInput = document.getElementById('hotkey-start-pause');
+const hotkeyResetInput = document.getElementById('hotkey-reset');
 const saveButton = document.getElementById('save-button');
 const cancelButton = document.getElementById('cancel-button');
 
@@ -247,6 +251,10 @@ function loadSettings(settings) {
     languageSelect.value = settings.language;
     launchAtLoginCheckbox.checked = settings.launchAtLogin;
     pauseAfterWorkCheckbox.checked = settings.pauseAfterWork;
+    enableStatsCheckbox.checked = settings.enableStats !== false;
+    enableHotkeysCheckbox.checked = settings.enableHotkeys !== false;
+    hotkeyStartPauseInput.value = settings.hotkeyStartPause || 'Ctrl+Alt+P';
+    hotkeyResetInput.value = settings.hotkeyReset || 'Ctrl+Alt+R';
 
     // Appearance
     loadAppearance(settings.appearance || {});
@@ -324,6 +332,10 @@ saveButton.addEventListener('click', () => {
         pauseAfterWork: pauseAfterWorkCheckbox.checked, // Save new setting
         language: languageSelect.value,
         launchAtLogin: launchAtLoginCheckbox.checked,
+        enableStats: enableStatsCheckbox.checked,
+        enableHotkeys: enableHotkeysCheckbox.checked,
+        hotkeyStartPause: hotkeyStartPauseInput.value.trim() || 'Ctrl+Alt+P',
+        hotkeyReset: hotkeyResetInput.value.trim() || 'Ctrl+Alt+R',
         appearance: getAppearanceFromFields()
     };
     ipcRenderer.send('save-settings', newSettings);

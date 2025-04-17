@@ -176,8 +176,10 @@ function startTimer(type) {
     remainingTime = timers[type];
     isPaused = false;
 
-    if (type === 'work' && enableCompletionSoundSetting) {
-        playSound('start');
+    if (type === 'work') {
+        if (enableCompletionSoundSetting) {
+            playSound('start');
+        }
     }
 
     if (currentSettings.enableNotifications) {
@@ -275,6 +277,10 @@ function startInterval() {
                     nextStateType = 'longrest';
                 } else {
                     nextStateType = 'shortrest';
+                }
+
+                if (currentSettings.enableStats) {
+                    ipcRenderer.send('work-session-complete', { remark: null });
                 }
             } else {
                 if (currentState === 'longrest') {
@@ -410,4 +416,12 @@ ipcRenderer.on('settings-updated', (event, { settings, localeData }) => {
     applyTranslations();
     applyAppearance(settings.appearance);
     updateDisplay();
+});
+
+// 快捷键事件监听
+ipcRenderer.on('hotkey-start-pause', () => {
+    togglePauseResume();
+});
+ipcRenderer.on('hotkey-reset', () => {
+    resetCurrentTimer();
 });

@@ -201,6 +201,7 @@
         <button class="tab-button" data-tab="tab-sounds" data-translate="tab_sounds">声音</button>
         <button class="tab-button" data-tab="tab-general" data-translate="tab_general">通用</button>
         <button class="tab-button" data-tab="tab-appearance" data-translate="tab_appearance">外观</button>
+        <button class="tab-button" data-tab="tab-hotkeys" data-translate="tab_hotkeys">快捷键</button>
     </div>
 
     <div class="tab-content-container"> <!-- Content container -->
@@ -296,6 +297,12 @@
                     <input type="checkbox" id="pause-after-work">
                 </div>
             </div>
+            <div class="form-group">
+                <label for="enable-stats" data-translate="settings_enable_stats">启用统计功能:</label>
+                <div class="control">
+                    <input type="checkbox" id="enable-stats">
+                </div>
+            </div>
         </div>
 
         <!-- 外观 Tab -->
@@ -381,6 +388,28 @@
             </div>
             <div class="form-group">
                 <button id="appearance-reset-button" type="button" data-translate="appearance_reset">恢复默认外观</button>
+            </div>
+        </div>
+
+        <!-- 快捷键 Tab -->
+        <div id="tab-hotkeys" class="tab-content">
+            <div class="form-group">
+                <label for="enable-hotkeys" data-translate="settings_enable_hotkeys">启用全部快捷键:</label>
+                <div class="control">
+                    <input type="checkbox" id="enable-hotkeys">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="hotkey-start-pause" data-translate="settings_hotkey_start_pause">开始/暂停快捷键:</label>
+                <div class="control">
+                    <input type="text" id="hotkey-start-pause" placeholder="Ctrl+Alt+P">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="hotkey-reset" data-translate="settings_hotkey_reset">重置快捷键:</label>
+                <div class="control">
+                    <input type="text" id="hotkey-reset" placeholder="Ctrl+Alt+R">
+                </div>
             </div>
         </div>
     </div> <!-- End of tab-content-container -->
