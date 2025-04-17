@@ -50,19 +50,20 @@
             display: block; /* Show active tab */
         }
         .form-group {
-            margin-bottom: 18px;
+            margin-bottom: 15px; /* Slightly reduced margin */
             display: flex;
             align-items: center;
-            justify-content: space-between; /* Align label and control */
         }
          .form-group label {
-            margin-right: 15px; /* Space between label and control */
-            flex-shrink: 0; /* Prevent label from shrinking */
+            flex-basis: 180px; /* Give labels a fixed base width */
+            flex-shrink: 0;
+            padding-right: 10px; /* Add padding for spacing */
+            text-align: right; /* Align label text to the right */
         }
-        label {
-            display: inline-block; /* Changed from block */
-            margin-bottom: 0; /* Removed bottom margin */
-            font-weight: normal; /* Less emphasis */
+        .form-group .control {
+             flex-grow: 1; /* Allow control to take remaining space */
+             display: flex; /* Use flex for controls with multiple parts */
+             align-items: center;
         }
         input[type="number"], select {
             padding: 6px 8px;
@@ -82,6 +83,25 @@
             height: 16px;
             width: 16px;
             vertical-align: middle;
+        }
+        .file-select-group {
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+        .file-select-group button {
+             margin-right: 8px;
+             flex-shrink: 0;
+             padding: 4px 10px; /* Smaller padding for select button */
+             font-size: 12px;
+        }
+        .file-select-group span {
+            font-size: 12px;
+            color: #555;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis; /* Show ellipsis if filename is too long */
+            flex-grow: 1;
         }
         .buttons {
             padding: 15px 20px;
@@ -126,19 +146,27 @@
     <div id="tab-timers" class="tab-content active">
         <div class="form-group">
             <label for="work-duration" data-translate="settings_work_duration">Work Duration (min):</label>
-            <input type="number" id="work-duration" min="1">
+            <div class="control">
+                <input type="number" id="work-duration" min="1">
+            </div>
         </div>
         <div class="form-group">
             <label for="short-break-duration" data-translate="settings_short_break_duration">Short Break (min):</label>
-            <input type="number" id="short-break-duration" min="1">
+            <div class="control">
+                <input type="number" id="short-break-duration" min="1">
+            </div>
         </div>
         <div class="form-group">
             <label for="long-break-duration" data-translate="settings_long_break_duration">Long Break (min):</label>
-            <input type="number" id="long-break-duration" min="1">
+            <div class="control">
+                <input type="number" id="long-break-duration" min="1">
+            </div>
         </div>
          <div class="form-group">
             <label for="long-break-interval" data-translate="settings_long_break_interval">Work Sessions before Long Break:</label>
-            <input type="number" id="long-break-interval" min="1">
+            <div class="control">
+                <input type="number" id="long-break-interval" min="1">
+            </div>
         </div>
     </div>
 
@@ -146,11 +174,37 @@
     <div id="tab-sounds" class="tab-content">
         <div class="form-group">
             <label for="enable-completion-sound" data-translate="settings_enable_completion_sound">Enable Start/Completion Sounds:</label>
-            <input type="checkbox" id="enable-completion-sound">
+            <div class="control">
+                <input type="checkbox" id="enable-completion-sound">
+            </div>
         </div>
         <div class="form-group">
             <label for="enable-ticking-sound" data-translate="settings_enable_ticking_sound">Enable Ticking Sound:</label>
-            <input type="checkbox" id="enable-ticking-sound">
+            <div class="control">
+                <input type="checkbox" id="enable-ticking-sound">
+            </div>
+        </div>
+        <hr style="margin: 15px 0;"> <!-- Separator -->
+        <div class="form-group">
+            <label for="custom-sound-start-button" data-translate="settings_custom_sound_start">Custom Start Sound:</label>
+            <div class="control file-select-group">
+                <button id="custom-sound-start-button" data-sound-type="start" data-translate="settings_select_file">Select File</button>
+                <span id="custom-sound-start-path" data-translate-base="settings_no_file_selected">No file selected</span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="custom-sound-tick-button" data-translate="settings_custom_sound_tick">Custom Tick Sound:</label>
+            <div class="control file-select-group">
+                <button id="custom-sound-tick-button" data-sound-type="tick" data-translate="settings_select_file">Select File</button>
+                <span id="custom-sound-tick-path" data-translate-base="settings_no_file_selected">No file selected</span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="custom-sound-complete-button" data-translate="settings_custom_sound_complete">Custom Completion Sound:</label>
+            <div class="control file-select-group">
+                <button id="custom-sound-complete-button" data-sound-type="complete" data-translate="settings_select_file">Select File</button>
+                <span id="custom-sound-complete-path" data-translate-base="settings_no_file_selected">No file selected</span>
+            </div>
         </div>
     </div>
 
@@ -158,18 +212,24 @@
     <div id="tab-general" class="tab-content">
          <div class="form-group">
             <label for="language-select" data-translate="settings_language">Language:</label>
-            <select id="language-select">
-                <option value="en">English</option>
-                <option value="zh">中文</option>
-            </select>
+            <div class="control">
+                <select id="language-select">
+                    <option value="en">English</option>
+                    <option value="zh">中文</option>
+                </select>
+            </div>
         </div>
          <div class="form-group">
             <label for="launch-at-login" data-translate="settings_launch_at_login">Launch at Login:</label>
-            <input type="checkbox" id="launch-at-login">
+            <div class="control">
+                <input type="checkbox" id="launch-at-login">
+            </div>
         </div>
-         <div class="form-group"> <!-- New setting -->
+         <div class="form-group">
             <label for="pause-after-work" data-translate="settings_pause_after_work">Pause after Work Session:</label>
-            <input type="checkbox" id="pause-after-work">
+            <div class="control">
+                <input type="checkbox" id="pause-after-work">
+            </div>
         </div>
     </div>
 

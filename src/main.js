@@ -1,9 +1,9 @@
-const { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain, screen, Notification } = require('electron'); // Add Notification
+const { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain, screen, Notification, dialog } = require('electron'); // 添加 dialog
 const path = require('path');
 const Store = require('electron-store');
 const fs = require('fs');
 
-// --- Settings Store ---
+// --- 设置存储 ---
 const store = new Store({
     defaults: {
         timers: {
@@ -11,13 +11,17 @@ const store = new Store({
             shortrest: 5 * 60,
             longrest: 15 * 60
         },
-        longBreakInterval: 4, // Number of work sessions before a long break
+        longBreakInterval: 4,
         enableCompletionSound: true,
         enableTickingSound: true,
-        pauseAfterWork: false, // New setting: Pause after work session instead of starting break automatically
-        enableNotifications: true, // New setting: Enable notifications
+        // 新增：自定义声音路径
+        customSoundStart: '',
+        customSoundTick: '',
+        customSoundComplete: '',
+        pauseAfterWork: false,
+        enableNotifications: true,
         launchAtLogin: false,
-        language: 'zh' // Default language 'en' or 'zh'
+        language: 'zh'
     }
 });
 
@@ -88,6 +92,7 @@ function createFlyoutWindow() {
     flyoutWindow.loadFile(path.join(__dirname, 'index.html'));
 
     flyoutWindow.webContents.on('did-finish-load', () => {
+        // 确保发送完整的 currentSettings
         flyoutWindow.webContents.send('initialize-data', { settings: currentSettings, localeData: currentLocaleData });
     });
 
@@ -240,19 +245,37 @@ ipcMain.on('close-flyout', () => {
     }
 });
 
+// 处理获取设置和本地化数据的请求
 ipcMain.handle('get-settings-and-locale', async (event) => {
+    // 确保返回最新的 currentSettings
     return { settings: currentSettings, localeData: currentLocaleData };
 });
 
+// 新增：处理文件选择请求
+ipcMain.handle('select-file', async (event) => {
+    const result = await dialog.showOpenDialog(settingsWindow, { // 将 settingsWindow 作为父窗口
+        title: translate('settings_select_file'), // 使用翻译后的标题
+        properties: ['openFile'],
+        filters: [
+            { name: 'Audio Files', extensions: ['wav'] } // 限制为 WAV 文件
+        ]
+    });
+    if (!result.canceled && result.filePaths.length > 0) {
+        return result.filePaths[0]; // 返回选择的文件路径
+    }
+    return null; // 如果取消或未选择文件，则返回 null
+});
+
+// 处理保存设置的请求
 ipcMain.on('save-settings', (event, newSettings) => {
-    console.log('Saving settings:', newSettings);
-    // Ensure all expected keys are present, especially boolean ones
+    console.log('正在保存设置:', newSettings);
+    // 确保所有预期的键都存在，特别是布尔值和新添加的字段
     const completeSettings = {
-        ...store.defaults, // Start with defaults
-        ...newSettings // Overwrite with provided settings
+        ...store.defaults, // 从默认值开始
+        ...newSettings     // 用提供的新设置覆盖
     };
-    store.set(completeSettings); // Persist complete settings object
-    currentSettings = completeSettings; // Update in-memory settings
+    store.set(completeSettings); // 持久化完整的设置对象
+    currentSettings = completeSettings; // 更新内存中的设置
 
     try {
         const appPath = app.isPackaged ? process.execPath : app.getPath('exe');
@@ -269,11 +292,13 @@ ipcMain.on('save-settings', (event, newSettings) => {
         console.error('Failed to update login item settings:', error);
     }
 
-    if (currentLocaleData.language !== newSettings.language) {
+    // 如果语言更改，重新加载本地化数据并更新菜单
+    if (currentLocaleData.language !== newSettings.language) { // 比较之前的语言和新设置的语言
         loadLocaleData(newSettings.language);
-        buildContextMenu();
+        buildContextMenu(); // 重新构建菜单以应用新语言
     }
 
+    // 通知渲染进程设置已更新，发送完整的设置对象
     if (flyoutWindow && !flyoutWindow.isDestroyed()) {
         flyoutWindow.webContents.send('settings-updated', { settings: currentSettings, localeData: currentLocaleData });
     }
