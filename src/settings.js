@@ -14,6 +14,9 @@ const customSoundCompleteButton = document.getElementById('custom-sound-complete
 const customSoundStartPathSpan = document.getElementById('custom-sound-start-path');
 const customSoundTickPathSpan = document.getElementById('custom-sound-tick-path');
 const customSoundCompletePathSpan = document.getElementById('custom-sound-complete-path');
+const removeSoundStartButton = document.getElementById('remove-sound-start-button'); 
+const removeSoundTickButton = document.getElementById('remove-sound-tick-button'); 
+const removeSoundCompleteButton = document.getElementById('remove-sound-complete-button'); 
 const languageSelect = document.getElementById('language-select');
 const launchAtLoginCheckbox = document.getElementById('launch-at-login'); // New
 const pauseAfterWorkCheckbox = document.getElementById('pause-after-work'); // New
@@ -79,20 +82,33 @@ function applyTranslations() {
 
 // --- 更新文件路径显示 ---
 function updateFilePathDisplay(spanElement, filePath) {
+    const soundType = spanElement.id.split('-')[3]; // Extract type (start, tick, complete)
+    const removeButton = document.getElementById(`remove-sound-${soundType}-button`);
+    
+    console.log(`更新文件路径: type=${soundType}, path=${filePath}, 按钮元素:`, removeButton);
+
     if (filePath && filePath.trim() !== '') {
         spanElement.textContent = path.basename(filePath); // 显示文件名
         spanElement.dataset.filePath = filePath; // 存储完整路径以备后用
+        
+        // 确保删除按钮可见
+        if (removeButton) {
+            removeButton.style.display = 'inline-block'; 
+            console.log(`已设置 ${soundType} 删除按钮显示`);
+        } else {
+            console.error(`未找到删除按钮: remove-sound-${soundType}-button`);
+        }
     } else {
         const baseKey = spanElement.getAttribute('data-translate-base');
         spanElement.textContent = currentLocaleData[baseKey] || baseKey; // 显示“未选择文件”
         delete spanElement.dataset.filePath; // 移除文件路径数据
+        if (removeButton) removeButton.style.display = 'none'; // 隐藏移除按钮
     }
 }
 
 // --- 加载和保存设置 ---
-ipcRenderer.invoke('get-settings-and-locale').then(({ settings, localeData }) => {
-    currentLocaleData = localeData;
-    currentSettings = settings; // 存储加载的设置
+function loadSettings(settings) { // 新增函数用于加载设置到界面
+    currentSettings = settings; // 更新内部状态
     // Timers
     workDurationInput.value = settings.timers.work / 60;
     shortBreakDurationInput.value = settings.timers.shortrest / 60;
@@ -109,7 +125,11 @@ ipcRenderer.invoke('get-settings-and-locale').then(({ settings, localeData }) =>
     languageSelect.value = settings.language;
     launchAtLoginCheckbox.checked = settings.launchAtLogin;
     pauseAfterWorkCheckbox.checked = settings.pauseAfterWork; // Load new setting
+}
 
+ipcRenderer.invoke('get-settings-and-locale').then(({ settings, localeData }) => {
+    currentLocaleData = localeData;
+    loadSettings(settings); // 使用新函数加载设置
     applyTranslations(); // Apply translations after loading locale and settings
 });
 
@@ -118,16 +138,36 @@ ipcRenderer.invoke('get-settings-and-locale').then(({ settings, localeData }) =>
     button.addEventListener('click', async () => {
         const soundType = button.dataset.soundType;
         const filePath = await ipcRenderer.invoke('select-file');
+        console.log(`文件选择结果: type=${soundType}, path=${filePath}`);
+        
         if (filePath !== null) { // 检查是否选择了文件（null 表示取消）
             // 更新显示的路径和存储的设置
             const spanElement = document.getElementById(`custom-sound-${soundType}-path`);
             updateFilePathDisplay(spanElement, filePath);
             // 立即更新 currentSettings 中的对应路径，以便保存时使用
-            // 使用驼峰命名法匹配 main.js 中的键
             currentSettings[`customSound${soundType.charAt(0).toUpperCase() + soundType.slice(1)}`] = filePath;
+            
+            // 手动设置移除按钮可见
+            const removeButton = document.getElementById(`remove-sound-${soundType}-button`);
+            if (removeButton) {
+                removeButton.style.display = 'inline-block';
+                console.log(`已手动设置 ${soundType} 删除按钮显示`);
+            }
         } else {
             console.log('文件选择已取消');
         }
+    });
+});
+
+// --- 新增：移除文件逻辑 ---
+[removeSoundStartButton, removeSoundTickButton, removeSoundCompleteButton].forEach(button => {
+    button.addEventListener('click', () => {
+        const soundType = button.dataset.soundType;
+        const spanElement = document.getElementById(`custom-sound-${soundType}-path`);
+        // 清除设置中的路径
+        currentSettings[`customSound${soundType.charAt(0).toUpperCase() + soundType.slice(1)}`] = '';
+        // 更新显示
+        updateFilePathDisplay(spanElement, '');
     });
 });
 

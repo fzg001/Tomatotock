@@ -2,11 +2,11 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title id="settings-title">Settings</title>
+    <title id="settings-title">设置</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f0f0f0;
+            background-color: #f0f0f0; /* Consistent background */
             color: #333;
             font-size: 14px;
             margin: 0;
@@ -18,107 +18,170 @@
         }
         .tab-header {
             display: flex;
-            background-color: #e0e0e0;
-            padding: 10px 20px 0 20px;
+            background-color: #e0e0e0; /* Slightly darker header background */
+            padding: 10px 20px 0 20px; /* Padding top, left/right, no bottom */
             border-bottom: 1px solid #ccc;
+            flex-shrink: 0; /* Prevent header shrinking */
         }
         .tab-button {
             padding: 8px 15px;
             cursor: pointer;
-            border: 1px solid transparent;
-            border-bottom: none;
+            border: 1px solid transparent; /* Transparent border for spacing */
+            border-bottom: none; /* Remove bottom border */
             margin-right: 5px;
             background-color: transparent;
             font-size: 14px;
-            border-radius: 5px 5px 0 0;
+            border-radius: 5px 5px 0 0; /* Rounded top corners */
             position: relative;
-            bottom: -1px; /* Align with border */
+            bottom: -1px; /* Overlap the container border */
+            color: #555; /* Dim inactive tabs */
+            outline: none; /* Remove focus outline */
+            white-space: nowrap; /* Prevent tab text wrapping */
         }
         .tab-button.active {
             background-color: #f0f0f0; /* Match content background */
-            border-color: #ccc;
+            border-color: #ccc; /* Border matches container border */
             border-bottom-color: #f0f0f0; /* Hide bottom border part */
-            font-weight: bold;
+            font-weight: 600; /* Slightly bolder active tab */
+            color: #333; /* Darker text for active tab */
+        }
+        .tab-content-container { /* Container for consistent padding and scroll */
+            flex-grow: 1; /* Take remaining vertical space */
+            overflow-y: auto; /* Allow vertical scroll if needed */
+            padding: 25px 20px; /* Increased top/bottom padding */
+            background-color: #f0f0f0; /* Ensure background matches */
         }
         .tab-content {
-            display: none; /* Hide tabs by default */
-            padding: 20px;
-            flex-grow: 1; /* Take remaining space */
-            overflow-y: auto; /* Allow scrolling if content overflows */
+            display: none; /* Hide inactive tabs */
         }
         .tab-content.active {
-            display: block; /* Show active tab */
+            display: block; /* Changed back to block */
         }
         .form-group {
-            margin-bottom: 15px; /* Slightly reduced margin */
+            margin-bottom: 18px; /* Increased spacing between groups */
             display: flex;
-            align-items: center;
+            align-items: center; /* Vertically center label and control */
+            min-height: 32px; /* Ensure consistent height, allows for button padding */
         }
          .form-group label {
-            flex-basis: 180px; /* Give labels a fixed base width */
-            flex-shrink: 0;
-            padding-right: 10px; /* Add padding for spacing */
-            text-align: right; /* Align label text to the right */
+            flex-basis: 210px; /* Increased fixed width for labels */
+            flex-shrink: 0; /* Prevent label shrinking */
+            padding-right: 15px; /* Increased space between label and control */
+            text-align: left; /* Changed to left alignment */
+            color: #444; /* Slightly darker label text */
+            font-size: 13px; /* Slightly smaller label font */
+            white-space: nowrap; /* Prevent label text wrapping */
         }
         .form-group .control {
              flex-grow: 1; /* Allow control to take remaining space */
-             display: flex; /* Use flex for controls with multiple parts */
-             align-items: center;
+             display: flex;
+             align-items: center; /* Align items within control (e.g., checkbox) */
+             min-width: 0; /* Prevent flex overflow issues */
+             justify-content: flex-start; /* Align control content to the left */
+             padding-left: 0; /* 确保没有额外的左内边距 */
         }
-        input[type="number"], select {
-            padding: 6px 8px;
+        input[type="number"], select, input[type="text"] {
+            padding: 6px 10px; /* Consistent padding */
             border: 1px solid #ccc;
             border-radius: 4px;
             box-sizing: border-box;
             font-size: 13px;
+            background-color: #fff;
+            height: 30px; /* Explicit height for alignment */
         }
         input[type="number"] {
-             width: 70px;
+             width: 75px; /* Slightly wider number input */
+        }
+        input[type="text"] { /* Style for text inputs */
+            width: 100%; /* Make text inputs fill their container */
         }
         select {
             min-width: 120px;
         }
         input[type="checkbox"] {
-            margin-left: 5px; /* Space before checkbox */
+            margin: 0 5px 0 0; /* 保持右侧间距 */
             height: 16px;
             width: 16px;
-            vertical-align: middle;
+            vertical-align: middle; /* Align checkbox better */
         }
         .file-select-group {
             display: flex;
             align-items: center;
             width: 100%;
+            padding-left: 0; /* 确保与复选框左侧对齐 */
         }
-        .file-select-group button {
-             margin-right: 8px;
+        .file-select-group button.select-sound-button { /* Specific class for select button */
+             margin-right: 10px;
              flex-shrink: 0;
-             padding: 4px 10px; /* Smaller padding for select button */
+             padding: 5px 12px;
              font-size: 12px;
+             height: 30px;
+             line-height: 18px;
+             white-space: nowrap;
+             margin-left: 0; /* 确保没有左边距 */
         }
         .file-select-group span {
             font-size: 12px;
             color: #555;
             overflow: hidden;
             white-space: nowrap;
-            text-overflow: ellipsis; /* Show ellipsis if filename is too long */
+            text-overflow: ellipsis;
             flex-grow: 1;
+            line-height: 30px; /* Match button/input height */
+            padding-left: 5px; /* Small padding for separation */
+            min-width: 50px; /* Ensure span doesn't collapse too much */
+            margin-right: 8px; /* 调整与删除按钮的距离 */
+        }
+        .file-select-group button.remove-sound-button { /* Style for remove button */
+            flex-shrink: 0;
+            padding: 0 8px; /* Smaller padding */
+            font-size: 12px;
+            height: 24px; /* Smaller height */
+            line-height: 22px; /* Adjust line height */
+            border: 1px solid #ccc;
+            background-color: #eee;
+            color: #d9534f; /* Red color */
+            border-radius: 4px;
+            cursor: pointer;
+            display: none; /* 默认隐藏，有文件时才显示 */
+            visibility: visible !important; /* 确保可见性 */
+            opacity: 1 !important; /* 确保不透明 */
+            margin-left: auto;
+            position: static !important; /* 防止定位问题 */
+            z-index: 10; /* 确保在顶层 */
+        }
+        .file-select-group button.remove-sound-button:hover {
+            background-color: #f9d7d7;
+            border-color: #d9534f;
+            color: #c9302c;
+        }
+        hr {
+            border: none;
+            border-top: 1px solid #ddd;
+            margin: 25px 0; /* Increased margin */
         }
         .buttons {
             padding: 15px 20px;
-            text-align: right;
+            display: flex;
+            justify-content: flex-end; /* Align buttons to the right */
             border-top: 1px solid #ccc;
-            background-color: #e0e0e0;
+            background-color: #e0e0e0; /* Match tab header background */
+            flex-shrink: 0; /* Prevent button bar shrinking */
         }
-        button {
+        button { /* General button style */
             font-family: inherit;
             font-size: 13px;
-            padding: 6px 15px; /* Adjusted padding */
+            padding: 6px 15px;
             border: 1px solid #adadad;
             border-radius: 5px;
             background-color: #fff;
             color: #333;
             cursor: pointer;
             margin-left: 10px;
+            height: 30px; /* Consistent height */
+            line-height: 16px; /* Adjust for vertical text centering */
+            outline: none;
+            white-space: nowrap; /* Prevent button text wrapping */
         }
         button:hover {
             background-color: #f5f5f5;
@@ -137,105 +200,110 @@
 </head>
 <body>
     <div class="tab-header">
-        <button class="tab-button active" data-tab="tab-timers" data-translate="tab_timers">Timers</button>
-        <button class="tab-button" data-tab="tab-sounds" data-translate="tab_sounds">Sounds</button>
-        <button class="tab-button" data-tab="tab-general" data-translate="tab_general">General</button>
+        <button class="tab-button active" data-tab="tab-timers" data-translate="tab_timers">计时器</button>
+        <button class="tab-button" data-tab="tab-sounds" data-translate="tab_sounds">声音</button>
+        <button class="tab-button" data-tab="tab-general" data-translate="tab_general">通用</button>
     </div>
 
-    <!-- Timers Tab -->
-    <div id="tab-timers" class="tab-content active">
-        <div class="form-group">
-            <label for="work-duration" data-translate="settings_work_duration">Work Duration (min):</label>
-            <div class="control">
-                <input type="number" id="work-duration" min="1">
+    <div class="tab-content-container"> <!-- Content container -->
+        <!-- 计时器 Tab -->
+        <div id="tab-timers" class="tab-content active">
+            <div class="form-group">
+                <label for="work-duration" data-translate="settings_work_duration">工作时长 (分钟):</label>
+                <div class="control">
+                    <input type="number" id="work-duration" min="1">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="short-break-duration" data-translate="settings_short_break_duration">短休息 (分钟):</label>
+                <div class="control">
+                    <input type="number" id="short-break-duration" min="1">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="long-break-duration" data-translate="settings_long_break_duration">长休息 (分钟):</label>
+                <div class="control">
+                    <input type="number" id="long-break-duration" min="1">
+                </div>
+            </div>
+             <div class="form-group">
+                <label for="long-break-interval" data-translate="settings_long_break_interval">长休息前工作组数:</label>
+                <div class="control">
+                    <input type="number" id="long-break-interval" min="1">
+                </div>
             </div>
         </div>
-        <div class="form-group">
-            <label for="short-break-duration" data-translate="settings_short_break_duration">Short Break (min):</label>
-            <div class="control">
-                <input type="number" id="short-break-duration" min="1">
-            </div>
-        </div>
-        <div class="form-group">
-            <label for="long-break-duration" data-translate="settings_long_break_duration">Long Break (min):</label>
-            <div class="control">
-                <input type="number" id="long-break-duration" min="1">
-            </div>
-        </div>
-         <div class="form-group">
-            <label for="long-break-interval" data-translate="settings_long_break_interval">Work Sessions before Long Break:</label>
-            <div class="control">
-                <input type="number" id="long-break-interval" min="1">
-            </div>
-        </div>
-    </div>
 
-    <!-- Sounds Tab -->
-    <div id="tab-sounds" class="tab-content">
-        <div class="form-group">
-            <label for="enable-completion-sound" data-translate="settings_enable_completion_sound">Enable Start/Completion Sounds:</label>
-            <div class="control">
-                <input type="checkbox" id="enable-completion-sound">
+        <!-- 声音 Tab -->
+        <div id="tab-sounds" class="tab-content">
+            <div class="form-group">
+                <label for="enable-completion-sound" data-translate="settings_enable_completion_sound">启用开始/结束提示音:</label>
+                <div class="control">
+                    <input type="checkbox" id="enable-completion-sound">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="enable-ticking-sound" data-translate="settings_enable_ticking_sound">启用滴答声:</label>
+                <div class="control">
+                    <input type="checkbox" id="enable-ticking-sound">
+                </div>
+            </div>
+            <hr> <!-- Separator -->
+            <div class="form-group">
+                <label for="custom-sound-start-button" data-translate="settings_custom_sound_start">自定义开始音效:</label>
+                <div class="control file-select-group">
+                    <button id="custom-sound-start-button" class="select-sound-button" data-sound-type="start" data-translate="settings_select_file">选择文件</button>
+                    <span id="custom-sound-start-path" data-translate-base="settings_no_file_selected">未选择文件</span>
+                    <button id="remove-sound-start-button" class="remove-sound-button" data-sound-type="start" data-translate="settings_remove_file">移除</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="custom-sound-tick-button" data-translate="settings_custom_sound_tick">自定义滴答音效:</label>
+                <div class="control file-select-group">
+                    <button id="custom-sound-tick-button" class="select-sound-button" data-sound-type="tick" data-translate="settings_select_file">选择文件</button>
+                    <span id="custom-sound-tick-path" data-translate-base="settings_no_file_selected">未选择文件</span>
+                    <button id="remove-sound-tick-button" class="remove-sound-button" data-sound-type="tick" data-translate="settings_remove_file">移除</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="custom-sound-complete-button" data-translate="settings_custom_sound_complete">自定义结束音效:</label>
+                <div class="control file-select-group">
+                    <button id="custom-sound-complete-button" class="select-sound-button" data-sound-type="complete" data-translate="settings_select_file">选择文件</button>
+                    <span id="custom-sound-complete-path" data-translate-base="settings_no_file_selected">未选择文件</span>
+                    <button id="remove-sound-complete-button" class="remove-sound-button" data-sound-type="complete" data-translate="settings_remove_file">移除</button>
+                </div>
             </div>
         </div>
-        <div class="form-group">
-            <label for="enable-ticking-sound" data-translate="settings_enable_ticking_sound">Enable Ticking Sound:</label>
-            <div class="control">
-                <input type="checkbox" id="enable-ticking-sound">
-            </div>
-        </div>
-        <hr style="margin: 15px 0;"> <!-- Separator -->
-        <div class="form-group">
-            <label for="custom-sound-start-button" data-translate="settings_custom_sound_start">Custom Start Sound:</label>
-            <div class="control file-select-group">
-                <button id="custom-sound-start-button" data-sound-type="start" data-translate="settings_select_file">Select File</button>
-                <span id="custom-sound-start-path" data-translate-base="settings_no_file_selected">No file selected</span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label for="custom-sound-tick-button" data-translate="settings_custom_sound_tick">Custom Tick Sound:</label>
-            <div class="control file-select-group">
-                <button id="custom-sound-tick-button" data-sound-type="tick" data-translate="settings_select_file">Select File</button>
-                <span id="custom-sound-tick-path" data-translate-base="settings_no_file_selected">No file selected</span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label for="custom-sound-complete-button" data-translate="settings_custom_sound_complete">Custom Completion Sound:</label>
-            <div class="control file-select-group">
-                <button id="custom-sound-complete-button" data-sound-type="complete" data-translate="settings_select_file">Select File</button>
-                <span id="custom-sound-complete-path" data-translate-base="settings_no_file_selected">No file selected</span>
-            </div>
-        </div>
-    </div>
 
-    <!-- General Tab -->
-    <div id="tab-general" class="tab-content">
-         <div class="form-group">
-            <label for="language-select" data-translate="settings_language">Language:</label>
-            <div class="control">
-                <select id="language-select">
-                    <option value="en">English</option>
-                    <option value="zh">中文</option>
-                </select>
+        <!-- 通用 Tab -->
+        <div id="tab-general" class="tab-content">
+             <div class="form-group">
+                <label for="language-select" data-translate="settings_language">语言:</label>
+                <div class="control">
+                    <select id="language-select">
+                        <option value="en">English</option>
+                        <option value="zh">中文</option>
+                    </select>
+                </div>
+            </div>
+             <div class="form-group">
+                <label for="launch-at-login" data-translate="settings_launch_at_login">登录时启动:</label>
+                <div class="control">
+                    <input type="checkbox" id="launch-at-login">
+                </div>
+            </div>
+             <div class="form-group">
+                <label for="pause-after-work" data-translate="settings_pause_after_work">工作结束后暂停:</label>
+                <div class="control">
+                    <input type="checkbox" id="pause-after-work">
+                </div>
             </div>
         </div>
-         <div class="form-group">
-            <label for="launch-at-login" data-translate="settings_launch_at_login">Launch at Login:</label>
-            <div class="control">
-                <input type="checkbox" id="launch-at-login">
-            </div>
-        </div>
-         <div class="form-group">
-            <label for="pause-after-work" data-translate="settings_pause_after_work">Pause after Work Session:</label>
-            <div class="control">
-                <input type="checkbox" id="pause-after-work">
-            </div>
-        </div>
-    </div>
+    </div> <!-- End of tab-content-container -->
 
     <div class="buttons">
-        <button id="cancel-button" data-translate="settings_cancel">Cancel</button>
-        <button id="save-button" data-translate="settings_save">Save</button>
+        <button id="cancel-button" data-translate="settings_cancel">取消</button>
+        <button id="save-button" data-translate="settings_save">保存</button>
     </div>
 
     <script src="./settings.js"></script>

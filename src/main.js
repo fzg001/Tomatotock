@@ -33,6 +33,7 @@ let currentTimerState = { state: 'idle', timeLeft: 0 };
 let currentSettings = store.get(); // Load initial settings
 let currentLocaleData = {};
 
+
 // --- Load Locale Data ---
 function loadLocaleData(lang) {
     try {
@@ -114,8 +115,8 @@ function createSettingsWindow() {
     }
 
     settingsWindow = new BrowserWindow({
-        width: 400,
-        height: 420,
+        width: 480, // Increased width
+        height: 460, // Increased height
         resizable: false,
         fullscreenable: false,
         modal: true,

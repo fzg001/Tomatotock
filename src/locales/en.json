@@ -28,6 +28,7 @@
     "settings_custom_sound_complete": "Custom Completion Sound:",
     "settings_select_file": "Select File",
     "settings_no_file_selected": "No file selected",
+    "settings_remove_file": "Remove",
     "settings_language": "Language:",
     "settings_launch_at_login": "Launch at Login:",
     "settings_pause_after_work": "Pause after Work Session:",
