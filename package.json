@@ -1,10 +1,15 @@
 {
-  "name": "tomato-bar-electron",
+  "name": "tomatotock",
   "version": "1.0.0",
   "description": "A Pomodoro timer for Windows taskbar using Electron",
   "main": "src/main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "dist:win": "electron-builder --win",
+    "dist:mac": "electron-builder --mac",
+    "dist:linux": "electron-builder --linux"
   },
   "author": "",
   "license": "MIT",
@@ -12,6 +17,44 @@
     "electron-store": "^8.1.0"
   },
   "devDependencies": {
-    "electron": "^22.3.27"
+    "electron": "^22.3.27",
+    "electron-builder": "^24.9.1"
+  },
+  "build": {
+    "appId": "com.tomatotock.app",
+    "productName": "Tomatotock",
+    "asar": true,
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "build/icons/icon.ico",
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
+    },
+    "mac": null,
+    "linux": null,
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "build/icons/icon.ico",
+      "uninstallerIcon": "build/icons/icon.ico",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Tomatotock"
+    }
   }
 }
