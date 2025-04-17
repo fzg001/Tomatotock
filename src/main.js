@@ -32,7 +32,7 @@ let settingsWindow = null;
 let currentTimerState = { state: 'idle', timeLeft: 0 };
 let currentSettings = store.get(); // Load initial settings
 let currentLocaleData = {};
-
+let lastTrayState = null; // 新增变量，记录上一次的状态
 
 // --- Load Locale Data ---
 function loadLocaleData(lang) {
@@ -201,6 +201,11 @@ function toggleWindow(bounds) {
 
 // --- App Lifecycle ---
 app.whenReady().then(() => {
+    // --- 新增：开发环境下确保 Windows 通知可用 ---
+    if (process.platform === 'win32') {
+        app.setAppUserModelId(process.execPath);
+    }
+
     const gotTheLock = app.requestSingleInstanceLock();
     if (!gotTheLock) {
         app.quit();
@@ -234,8 +239,12 @@ app.on('window-all-closed', () => {});
 ipcMain.on('timer-update', (event, newState) => {
     currentTimerState = newState;
     if (tray) {
-        const icon = icons[newState.state] || icons.idle;
-        tray.setImage(icon);
+        // 只有状态变化时才更新图标
+        if (lastTrayState !== newState.state) {
+            const icon = icons[newState.state] || icons.idle;
+            tray.setImage(icon);
+            lastTrayState = newState.state;
+        }
         updateTrayTooltip();
     }
 });
@@ -307,16 +316,26 @@ ipcMain.on('save-settings', (event, newSettings) => {
 
 // IPC handler for showing notifications from renderer
 ipcMain.on('show-notification', (event, { title, body }) => {
+    console.log('[通知调试] 收到 show-notification:', { title, body });
+    if (!body || typeof body !== 'string' || body.trim() === '') {
+        console.warn('[通知调试] body 为空，跳过通知');
+        return;
+    }
     if (Notification.isSupported()) {
-        const notification = new Notification({
-            title: title,
-            body: body,
-            icon: icons.appIcon, // Use app icon for notification
-            silent: !currentSettings.enableCompletionSound // Optionally silence notification if sounds are off
-        });
-        notification.show();
+        try {
+            const notification = new Notification({
+                title: 'Tomatotock',
+                body: body,
+                icon: icons.appIcon,
+                // silent: !currentSettings.enableCompletionSound // 可注释掉，避免被系统静音
+            });
+            notification.show();
+            console.log('[通知调试] Notification.show() 已调用');
+        } catch (e) {
+            console.error('[通知调试] Notification 异常:', e);
+        }
     } else {
-        console.log('Notifications not supported on this system.');
+        console.log('[通知调试] Notifications not supported on this system.');
     }
 });
 

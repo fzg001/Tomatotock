@@ -33,5 +33,11 @@
     "settings_launch_at_login": "登录时启动:",
     "settings_pause_after_work": "工作结束后暂停:",
     "settings_save": "保存",
-    "settings_cancel": "取消"
+    "settings_cancel": "取消",
+    "notification_start_work_title": "开始工作",
+    "notification_start_work_body": "新一轮工作已开始，加油！",
+    "notification_start_break_title": "开始休息",
+    "notification_start_break_body": "休息时间到啦：{break_type}",
+    "notification_long_break_title": "长休息开始",
+    "notification_long_break_body": "恭喜，本组工作已完成，进入长休息！"
 }

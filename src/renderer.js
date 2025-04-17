@@ -9,7 +9,7 @@ const resetButton = document.getElementById('reset-button');
 const audioPlayer = document.getElementById('audioPlayer');
 const container = document.querySelector('.container'); // For state classes
 
-const sounds = { // 默认声音
+const sounds = {
     start: path.join(__dirname, 'Sounds', 'windup.wav'),
     tick: path.join(__dirname, 'Sounds', 'ticking.wav'),
     complete: path.join(__dirname, 'Sounds', 'ding.wav')
@@ -24,21 +24,21 @@ let timers = {
 let longBreakIntervalSetting = 4;
 let enableCompletionSoundSetting = true;
 let enableTickingSoundSetting = true;
-let pauseAfterWorkSetting = false; // New setting variable
+let pauseAfterWorkSetting = false;
 
 let timerInterval = null;
-let remainingTime = timers.work; // Default to work time initially
-let currentState = 'idle'; // 'idle', 'work', 'shortrest', 'longrest'
+let remainingTime = timers.work;
+let currentState = 'idle';
 let isPaused = false;
 let isTickingSoundPlaying = false;
-let currentTimerType = 'work'; // Track which timer duration is set
-let currentLocaleData = {}; // Store loaded locale data
-let currentSettings = {}; // Store full settings object
-let workSessionCounter = 0; // Counter for long break cycle
+let currentTimerType = 'work';
+let currentLocaleData = {};
+let currentSettings = {};
+let workSessionCounter = 0;
 
 // --- Translation Helper ---
 function translate(key, replacements = {}) {
-    let translation = currentLocaleData[key] || key; // Fallback to key if not found
+    let translation = currentLocaleData[key] || key;
     for (const placeholder in replacements) {
         translation = translation.replace(`{${placeholder}}`, replacements[placeholder]);
     }
@@ -46,12 +46,10 @@ function translate(key, replacements = {}) {
 }
 
 // --- Sound Handling ---
-function playSound(soundType, loop = false) { // 修改参数为 soundType: 'start', 'tick', 'complete'
+function playSound(soundType, loop = false) {
     let soundPath;
-    // 检查是否有自定义声音路径
     switch (soundType) {
         case 'start':
-            // 使用驼峰命名法匹配 main.js 中的键
             soundPath = currentSettings.customSoundStart || sounds.start;
             break;
         case 'tick':
@@ -65,17 +63,14 @@ function playSound(soundType, loop = false) { // 修改参数为 soundType: 'sta
             return;
     }
 
-    // 检查全局完成音效设置（针对开始/完成声音）
     if (!enableCompletionSoundSetting && (soundType === 'start' || soundType === 'complete')) {
-        return; // 如果禁用则不播放
+        return;
     }
-    // 检查全局滴答声设置
     if (!enableTickingSoundSetting && soundType === 'tick') {
-        stopSound(); // 如果在会话期间禁用，确保滴答声停止
-        return; // 如果禁用则不播放
+        stopSound();
+        return;
     }
 
-    // 检查文件路径是否为空或无效（基本检查）
     if (!soundPath || typeof soundPath !== 'string' || soundPath.trim() === '') {
         console.error(`Invalid or empty sound path for type: ${soundType}`);
         return;
@@ -87,29 +82,21 @@ function playSound(soundType, loop = false) { // 修改参数为 soundType: 'sta
         isTickingSoundPlaying = false;
     }
 
-    // 使用 file:// 协议确保本地文件路径正确加载
-    // 注意：需要将反斜杠替换为正斜杠
     const audioSrc = `file://${soundPath.replace(/\\/g, '/')}`;
-
-    // 检查是否需要更新 src
-    // 使用 decodeURIComponent 来处理可能存在的 URL 编码字符
     const currentSrcDecoded = audioPlayer.src ? decodeURIComponent(audioPlayer.src) : '';
     const newSrcDecoded = decodeURIComponent(audioSrc);
 
     if (currentSrcDecoded !== newSrcDecoded || audioPlayer.paused) {
         try {
-            console.log(`Playing sound: ${soundType} from ${audioSrc}`); // 调试信息
             audioPlayer.src = audioSrc;
             audioPlayer.loop = loop;
-            // 等待 canplay 事件可能更可靠，但 play() 通常会处理加载
             audioPlayer.play().catch(e => console.error(`播放声音时出错 (${soundPath}):`, e));
         } catch (e) {
-             console.error(`设置音频源时出错 (${soundPath}):`, e);
+            console.error(`设置音频源时出错 (${soundPath}):`, e);
         }
     } else if (currentSrcDecoded === newSrcDecoded && loop !== audioPlayer.loop) {
-        // 如果 src 相同但 loop 不同
         audioPlayer.loop = loop;
-        if (audioPlayer.paused) { // 如果因为某种原因暂停了，重新播放
+        if (audioPlayer.paused) {
             audioPlayer.play().catch(e => console.error(`播放声音时出错 (${soundPath}):`, e));
         }
     }
@@ -134,8 +121,8 @@ function updateDisplay() {
 
     let stateText = translate('state_idle');
     let stateKey = 'state_idle';
-    stateIndicator.className = 'state-indicator'; // Reset class
-    container.className = 'container'; // Reset class
+    stateIndicator.className = 'state-indicator';
+    container.className = 'container';
 
     if (currentState !== 'idle') {
         stateKey = `state_${currentState}`;
@@ -143,11 +130,11 @@ function updateDisplay() {
         if (isPaused) {
             stateText += translate('state_paused');
         }
-        stateIndicator.classList.add(currentState); // Add class like 'work', 'shortrest'
+        stateIndicator.classList.add(currentState);
         container.classList.add(currentState);
     }
     stateIndicator.textContent = stateText;
-    stateIndicator.setAttribute('data-translate-base', stateKey); // Store base key for updates
+    stateIndicator.setAttribute('data-translate-base', stateKey);
 
     if (currentState === 'idle') {
         startPauseButton.textContent = translate('button_start');
@@ -187,17 +174,32 @@ function startTimer(type) {
     remainingTime = timers[type];
     isPaused = false;
 
-    console.log(`启动计时器: ${type}, 时长: ${remainingTime}s, 会话: ${workSessionCounter}`);
-
-    // 仅在工作会话开始且启用完成音效时播放开始声音
     if (type === 'work' && enableCompletionSoundSetting) {
-        playSound('start'); // 使用 'start' 类型
+        playSound('start');
     }
 
-    // 延迟后启动滴答声，仅限工作会话且启用时
+    if (currentSettings.enableNotifications) {
+        if (type === 'work') {
+            ipcRenderer.send('show-notification', {
+                title: translate('notification_start_work_title'),
+                body: translate('notification_start_work_body')
+            });
+        } else if (type === 'shortrest') {
+            ipcRenderer.send('show-notification', {
+                title: translate('notification_start_break_title'),
+                body: translate('notification_start_break_body', { break_type: translate('state_shortrest') })
+            });
+        } else if (type === 'longrest') {
+            ipcRenderer.send('show-notification', {
+                title: translate('notification_long_break_title'),
+                body: translate('notification_long_break_body')
+            });
+        }
+    }
+
     setTimeout(() => {
         if (currentState === 'work' && !isPaused && enableTickingSoundSetting) {
-            playSound('tick', true); // 使用 'tick' 类型
+            playSound('tick', true);
         }
     }, 1000);
 
@@ -215,12 +217,9 @@ function togglePauseResume() {
         if (isPaused) {
             if (timerInterval) clearInterval(timerInterval);
             stopSound();
-            console.log('计时器已暂停');
         } else {
-            console.log('计时器已恢复');
-            // 仅在工作会话且启用时恢复滴答声
             if (currentState === 'work' && enableTickingSoundSetting) {
-                playSound('tick', true); // 使用 'tick' 类型
+                playSound('tick', true);
             }
             startInterval();
         }
@@ -237,12 +236,10 @@ function startInterval() {
         updateDisplay();
 
         if (remainingTime <= 0) {
-            // 1. 停止当前的 Interval
             if (timerInterval) {
                 clearInterval(timerInterval);
                 timerInterval = null;
             }
-            // 2. 如果滴答声在播放，停止它
             if (isTickingSoundPlaying) {
                 stopSound();
             }
@@ -251,18 +248,13 @@ function startInterval() {
             let playCompleteSound = false;
 
             if (currentState === 'work') {
-                // 标记需要播放完成音效（如果设置允许）
                 if (enableCompletionSoundSetting) {
                     playCompleteSound = true;
                 }
                 workSessionCounter++;
-                console.log(`Work session ${workSessionCounter} completed.`);
 
-                // 3. 检查是否设置了工作后暂停
                 if (pauseAfterWorkSetting) {
-                    console.log('Pausing after work session as per setting.');
                     isPaused = true;
-                    // 确定下一个计时器类型（用于显示）
                     if (workSessionCounter >= longBreakIntervalSetting) {
                         currentTimerType = 'longrest';
                     } else {
@@ -271,73 +263,33 @@ function startInterval() {
                     remainingTime = timers[currentTimerType];
                     updateDisplay();
 
-                    // 在返回前播放完成音效
                     if (playCompleteSound) {
-                        playSound('complete'); // 使用 'complete' 类型
+                        playSound('complete');
                     }
-
-                    // 发送通知 (如果启用)
-                    if (currentSettings.enableNotifications) {
-                        ipcRenderer.send('show-notification', {
-                            title: translate('notification_work_complete_title'), // 可以考虑也自定义这个通知
-                            body: translate('notification_work_complete_body', { next_state: translate(`state_${currentTimerType}`) })
-                        });
-                    }
-                    return; // 退出 Interval 回调，等待用户操作
+                    return;
                 }
 
-                // 4. 如果不暂停，确定下一个状态（自动开始休息）
                 if (workSessionCounter >= longBreakIntervalSetting) {
                     nextStateType = 'longrest';
-                    console.log('Starting long break.');
                 } else {
                     nextStateType = 'shortrest';
-                    console.log('Starting short break.');
                 }
-                // 发送通知 (如果启用)
-                if (currentSettings.enableNotifications) {
-                     ipcRenderer.send('show-notification', {
-                        title: translate('notification_work_complete_title'), // 可以考虑也自定义这个通知
-                        body: translate('notification_work_complete_body_auto', { next_state: translate(`state_${nextStateType}`) })
-                    });
-                }
-
-            } else { // 当前是休息状态 ('shortrest' or 'longrest')
-                // ... (休息结束逻辑，不需要播放完成音效) ...
+            } else {
                 if (currentState === 'longrest') {
                     workSessionCounter = 0;
-                    console.log('Long break finished. Resetting work session counter.');
-                } else {
-                    console.log('Short break finished.');
                 }
                 nextStateType = 'work';
-                console.log('Starting work session.');
-                // 发送通知 (如果启用)
-                if (currentSettings.enableNotifications) {
-                    ipcRenderer.send('show-notification', {
-                        title: translate('notification_break_complete_title'), // 可以考虑也自定义这个通知
-                        body: translate('notification_break_complete_body')
-                    });
-                }
             }
 
-            // 5. 播放工作完成音效（如果标记了）
             if (playCompleteSound) {
-                playSound('complete'); // 使用 'complete' 类型
+                playSound('complete');
             }
 
-            // 6. 重置暂停状态（以防万一）并准备启动下一个计时器
             isPaused = false;
 
-            // 7. 延迟后自动启动下一个计时器
             setTimeout(() => {
-                // ... (确保状态未改变) ...
                 if (!isPaused && currentState !== 'idle') {
-                     startTimer(nextStateType);
-                } else if (currentState === 'idle') {
-                    console.log('Timer was reset during transition delay. Not starting next state.');
-                } else {
-                     console.log('Timer was paused during transition delay. Not starting next state automatically.');
+                    startTimer(nextStateType);
                 }
             }, 1500);
         }
@@ -346,7 +298,6 @@ function startInterval() {
 
 function resetCurrentTimer() {
     stopTimer(true);
-    console.log('Timer reset.');
     updateDisplay();
 }
 
@@ -365,15 +316,13 @@ resetButton.addEventListener('click', resetCurrentTimer);
 
 // --- IPC Listeners ---
 ipcRenderer.on('initialize-data', (event, { settings, localeData }) => {
-    console.log('收到初始数据:', settings);
     currentLocaleData = localeData;
-    currentSettings = settings; // 存储完整的设置对象
+    currentSettings = settings;
     timers = settings.timers;
     longBreakIntervalSetting = settings.longBreakInterval;
     enableCompletionSoundSetting = settings.enableCompletionSound;
     enableTickingSoundSetting = settings.enableTickingSound;
     pauseAfterWorkSetting = settings.pauseAfterWork;
-    // enableNotificationsSetting = settings.enableNotifications; // 确保加载通知设置
     remainingTime = timers[currentTimerType];
 
     applyTranslations();
@@ -381,16 +330,14 @@ ipcRenderer.on('initialize-data', (event, { settings, localeData }) => {
 });
 
 ipcRenderer.on('settings-updated', (event, { settings, localeData }) => {
-    console.log('收到设置更新:', settings);
     currentLocaleData = localeData;
-    currentSettings = settings; // 存储完整的设置对象
+    currentSettings = settings;
     const oldTimers = { ...timers };
     timers = settings.timers;
     longBreakIntervalSetting = settings.longBreakInterval;
     enableCompletionSoundSetting = settings.enableCompletionSound;
     enableTickingSoundSetting = settings.enableTickingSound;
     pauseAfterWorkSetting = settings.pauseAfterWork;
-    // enableNotificationsSetting = settings.enableNotifications; // 确保更新通知设置
 
     if (currentState === 'idle' || isPaused) {
         if (oldTimers[currentTimerType] !== timers[currentTimerType]) {
