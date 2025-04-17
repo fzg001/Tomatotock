@@ -12,26 +12,44 @@ html, body {
     user-select: none; /* Prevent text selection */
 }
 
+/* CSS Variables */
+:root {
+    --card-bg: #f0f0f0;
+    --card-opacity: 1;
+    --timer-color: #444;
+    --idle-color: #888;
+    --work-color: #d9534f;
+    --shortrest-color: #5cb85c;
+    --longrest-color: #428bca;
+    --btn-bg: #fff;
+    --btn-hover-bg: #e6e6e6;
+    --btn-active-bg: #d4d4d4;
+    --btn-color: #333;
+    --btn-active-color: #c9302c;
+    --btn-active-border: #c9302c;
+}
+
 /* Main container for styling (rounded corners, background) */
 .container {
     width: 100%;
     height: 100%;
-    background-color: #f0f0f0; /* Light grey background like macOS */
-    border-radius: 8px; /* Rounded corners */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Subtle shadow */
+    background: var(--card-bg);
+    opacity: var(--card-opacity, 1);
+    border-radius: 8px;
+    /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); */
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center; /* Center content vertically */
+    justify-content: center;
     padding: 20px;
-    border: 1px solid rgba(0, 0, 0, 0.1); /* Subtle border */
+    border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 /* Timer Display */
 .timer-display {
     font-size: 48px; /* Large timer font */
     font-weight: 200; /* Light font weight */
-    color: #444;
+    color: var(--timer-color, #444);
     margin-bottom: 15px;
     font-variant-numeric: tabular-nums; /* Ensure numbers have same width */
 }
@@ -39,14 +57,14 @@ html, body {
 /* State Indicator */
 .state-indicator {
     font-size: 12px;
-    color: #888;
+    color: var(--idle-color, #888);
     margin-bottom: 20px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
-.state-indicator.work { color: #d9534f; }
-.state-indicator.shortrest { color: #5cb85c; }
-.state-indicator.longrest { color: #428bca; }
+.state-indicator.work { color: var(--work-color, #d9534f); }
+.state-indicator.shortrest { color: var(--shortrest-color, #5cb85c); }
+.state-indicator.longrest { color: var(--longrest-color, #428bca); }
 
 /* Button Controls */
 .controls {
@@ -60,30 +78,30 @@ button {
     padding: 6px 12px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    background-color: #fff;
-    color: #333;
+    background-color: var(--btn-bg, #fff);
+    color: var(--btn-color, #333);
     cursor: pointer;
-    transition: background-color 0.15s ease, border-color 0.15s ease;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s;
     min-width: 70px; /* Ensure buttons have a minimum width */
     text-align: center;
 }
 
 button:hover {
-    background-color: #e6e6e6;
+    background-color: var(--btn-hover-bg, #e6e6e6);
     border-color: #adadad;
 }
 
 button:active {
-    background-color: #d4d4d4;
+    background-color: var(--btn-active-bg, #d4d4d4);
     box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
 }
 
 /* Specific button styles if needed */
 #start-pause-button.active {
     /* Style for when timer is running (e.g., Pause button) */
-    border-color: #c9302c;
-    color: #c9302c;
+    border-color: var(--btn-active-border, #c9302c);
+    color: var(--btn-active-color, #c9302c);
 }
- #start-pause-button.active:hover {
-     background-color: #fbeaea;
- }
+#start-pause-button.active:hover {
+    background-color: #fbeaea;
+}

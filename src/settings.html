@@ -200,6 +200,7 @@
         <button class="tab-button active" data-tab="tab-timers" data-translate="tab_timers">计时器</button>
         <button class="tab-button" data-tab="tab-sounds" data-translate="tab_sounds">声音</button>
         <button class="tab-button" data-tab="tab-general" data-translate="tab_general">通用</button>
+        <button class="tab-button" data-tab="tab-appearance" data-translate="tab_appearance">外观</button>
     </div>
 
     <div class="tab-content-container"> <!-- Content container -->
@@ -294,6 +295,92 @@
                 <div class="control">
                     <input type="checkbox" id="pause-after-work">
                 </div>
+            </div>
+        </div>
+
+        <!-- 外观 Tab -->
+        <div id="tab-appearance" class="tab-content">
+            <div class="form-group">
+                <label for="appearance-card-bg" data-translate="appearance_card_bg">卡片背景色:</label>
+                <div class="control">
+                    <input type="color" id="appearance-card-bg">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="appearance-card-opacity" data-translate="appearance_card_opacity">卡片透明度:</label>
+                <div class="control">
+                    <input type="range" id="appearance-card-opacity" min="0.2" max="1" step="0.01">
+                    <span id="appearance-card-opacity-value"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="appearance-timer-color" data-translate="appearance_timer_color">计时器字体颜色:</label>
+                <div class="control">
+                    <input type="color" id="appearance-timer-color">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="appearance-idle-color" data-translate="appearance_idle_color">IDLE字体颜色:</label>
+                <div class="control">
+                    <input type="color" id="appearance-idle-color">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="appearance-work-color" data-translate="appearance_work_color">工作字体颜色:</label>
+                <div class="control">
+                    <input type="color" id="appearance-work-color">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="appearance-shortrest-color" data-translate="appearance_shortrest_color">短休息字体颜色:</label>
+                <div class="control">
+                    <input type="color" id="appearance-shortrest-color">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="appearance-longrest-color" data-translate="appearance_longrest_color">长休息字体颜色:</label>
+                <div class="control">
+                    <input type="color" id="appearance-longrest-color">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="appearance-btn-bg" data-translate="appearance_btn_bg">按钮背景色:</label>
+                <div class="control">
+                    <input type="color" id="appearance-btn-bg">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="appearance-btn-hover-bg" data-translate="appearance_btn_hover_bg">按钮悬停背景色:</label>
+                <div class="control">
+                    <input type="color" id="appearance-btn-hover-bg">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="appearance-btn-active-bg" data-translate="appearance_btn_active_bg">按钮按下背景色:</label>
+                <div class="control">
+                    <input type="color" id="appearance-btn-active-bg">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="appearance-btn-color" data-translate="appearance_btn_color">按钮文字颜色:</label>
+                <div class="control">
+                    <input type="color" id="appearance-btn-color">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="appearance-btn-active-color" data-translate="appearance_btn_active_color">激活按钮文字颜色:</label>
+                <div class="control">
+                    <input type="color" id="appearance-btn-active-color">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="appearance-btn-active-border" data-translate="appearance_btn_active_border">激活按钮边框色:</label>
+                <div class="control">
+                    <input type="color" id="appearance-btn-active-border">
+                </div>
+            </div>
+            <div class="form-group">
+                <button id="appearance-reset-button" type="button" data-translate="appearance_reset">恢复默认外观</button>
             </div>
         </div>
     </div> <!-- End of tab-content-container -->

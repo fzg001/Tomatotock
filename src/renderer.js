@@ -312,6 +312,40 @@ function applyTranslations() {
     stateIndicator.textContent = translate(stateIndicatorBaseKey) + (currentState !== 'idle' && isPaused ? translate('state_paused') : '');
 }
 
+// --- Apply Appearance to UI ---
+function applyAppearance(appearance) {
+    const ap = {
+        cardBg: '#f0f0f0',
+        cardOpacity: 1,
+        timerColor: '#444444',
+        idleColor: '#888888',
+        workColor: '#d9534f',
+        shortrestColor: '#5cb85c',
+        longrestColor: '#428bca',
+        btnBg: '#ffffff',
+        btnHoverBg: '#e6e6e6',
+        btnActiveBg: '#d4d4d4',
+        btnColor: '#333333',
+        btnActiveColor: '#c9302c',
+        btnActiveBorder: '#c9302c',
+        ...(appearance || {})
+    };
+    const root = document.documentElement;
+    root.style.setProperty('--card-bg', ap.cardBg);
+    root.style.setProperty('--card-opacity', ap.cardOpacity);
+    root.style.setProperty('--timer-color', ap.timerColor);
+    root.style.setProperty('--idle-color', ap.idleColor);
+    root.style.setProperty('--work-color', ap.workColor);
+    root.style.setProperty('--shortrest-color', ap.shortrestColor);
+    root.style.setProperty('--longrest-color', ap.longrestColor);
+    root.style.setProperty('--btn-bg', ap.btnBg);
+    root.style.setProperty('--btn-hover-bg', ap.btnHoverBg);
+    root.style.setProperty('--btn-active-bg', ap.btnActiveBg);
+    root.style.setProperty('--btn-color', ap.btnColor);
+    root.style.setProperty('--btn-active-color', ap.btnActiveColor);
+    root.style.setProperty('--btn-active-border', ap.btnActiveBorder);
+}
+
 // --- Event Listeners ---
 // 只绑定一次，避免重复绑定
 if (!window._tomatotockEventBound) {
@@ -350,6 +384,7 @@ ipcRenderer.on('initialize-data', (event, { settings, localeData }) => {
     remainingTime = timers[currentTimerType];
 
     applyTranslations();
+    applyAppearance(settings.appearance);
     updateDisplay();
 });
 
@@ -373,5 +408,6 @@ ipcRenderer.on('settings-updated', (event, { settings, localeData }) => {
     }
 
     applyTranslations();
+    applyAppearance(settings.appearance);
     updateDisplay();
 });

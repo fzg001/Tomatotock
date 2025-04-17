@@ -21,7 +21,22 @@ const store = new Store({
         pauseAfterWork: false,
         enableNotifications: true,
         launchAtLogin: false,
-        language: 'zh'
+        language: 'zh',
+        appearance: {
+            cardBg: '#f0f0f0',
+            cardOpacity: 1,
+            timerColor: '#444444',
+            idleColor: '#888888',
+            workColor: '#d9534f',
+            shortrestColor: '#5cb85c',
+            longrestColor: '#428bca',
+            btnBg: '#ffffff',
+            btnHoverBg: '#e6e6e6',
+            btnActiveBg: '#d4d4d4',
+            btnColor: '#333333',
+            btnActiveColor: '#c9302c',
+            btnActiveBorder: '#c9302c'
+        }
     }
 });
 

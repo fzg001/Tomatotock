@@ -23,6 +23,88 @@ const pauseAfterWorkCheckbox = document.getElementById('pause-after-work'); // N
 const saveButton = document.getElementById('save-button');
 const cancelButton = document.getElementById('cancel-button');
 
+// 外观设置元素
+const appearanceFields = {
+    cardBg: document.getElementById('appearance-card-bg'),
+    cardOpacity: document.getElementById('appearance-card-opacity'),
+    timerColor: document.getElementById('appearance-timer-color'),
+    idleColor: document.getElementById('appearance-idle-color'),
+    workColor: document.getElementById('appearance-work-color'),
+    shortrestColor: document.getElementById('appearance-shortrest-color'),
+    longrestColor: document.getElementById('appearance-longrest-color'),
+    btnBg: document.getElementById('appearance-btn-bg'),
+    btnHoverBg: document.getElementById('appearance-btn-hover-bg'),
+    btnActiveBg: document.getElementById('appearance-btn-active-bg'),
+    btnColor: document.getElementById('appearance-btn-color'),
+    btnActiveColor: document.getElementById('appearance-btn-active-color'),
+    btnActiveBorder: document.getElementById('appearance-btn-active-border'),
+    cardOpacityValue: document.getElementById('appearance-card-opacity-value'),
+    resetBtn: document.getElementById('appearance-reset-button')
+};
+
+// 默认外观设置
+const defaultAppearance = {
+    cardBg: '#f0f0f0',
+    cardOpacity: 1,
+    timerColor: '#444444',
+    idleColor: '#888888',
+    workColor: '#d9534f',
+    shortrestColor: '#5cb85c',
+    longrestColor: '#428bca',
+    btnBg: '#ffffff',
+    btnHoverBg: '#e6e6e6',
+    btnActiveBg: '#d4d4d4',
+    btnColor: '#333333',
+    btnActiveColor: '#c9302c',
+    btnActiveBorder: '#c9302c'
+};
+
+function loadAppearance(appearance) {
+    const ap = { ...defaultAppearance, ...appearance };
+    appearanceFields.cardBg.value = ap.cardBg;
+    appearanceFields.cardOpacity.value = ap.cardOpacity;
+    appearanceFields.cardOpacityValue.textContent = ap.cardOpacity;
+    appearanceFields.timerColor.value = ap.timerColor;
+    appearanceFields.idleColor.value = ap.idleColor;
+    appearanceFields.workColor.value = ap.workColor;
+    appearanceFields.shortrestColor.value = ap.shortrestColor;
+    appearanceFields.longrestColor.value = ap.longrestColor;
+    appearanceFields.btnBg.value = ap.btnBg;
+    appearanceFields.btnHoverBg.value = ap.btnHoverBg;
+    appearanceFields.btnActiveBg.value = ap.btnActiveBg;
+    appearanceFields.btnColor.value = ap.btnColor;
+    appearanceFields.btnActiveColor.value = ap.btnActiveColor;
+    appearanceFields.btnActiveBorder.value = ap.btnActiveBorder;
+}
+
+function getAppearanceFromFields() {
+    return {
+        cardBg: appearanceFields.cardBg.value,
+        cardOpacity: parseFloat(appearanceFields.cardOpacity.value),
+        timerColor: appearanceFields.timerColor.value,
+        idleColor: appearanceFields.idleColor.value,
+        workColor: appearanceFields.workColor.value,
+        shortrestColor: appearanceFields.shortrestColor.value,
+        longrestColor: appearanceFields.longrestColor.value,
+        btnBg: appearanceFields.btnBg.value,
+        btnHoverBg: appearanceFields.btnHoverBg.value,
+        btnActiveBg: appearanceFields.btnActiveBg.value,
+        btnColor: appearanceFields.btnColor.value,
+        btnActiveColor: appearanceFields.btnActiveColor.value,
+        btnActiveBorder: appearanceFields.btnActiveBorder.value
+    };
+}
+
+// 透明度滑块显示
+appearanceFields.cardOpacity.addEventListener('input', () => {
+    appearanceFields.cardOpacityValue.textContent = appearanceFields.cardOpacity.value;
+});
+
+// 恢复默认外观
+appearanceFields.resetBtn.addEventListener('click', () => {
+    loadAppearance(defaultAppearance);
+});
+
 // Tab 元素
 const tabButtons = document.querySelectorAll('.tab-button');
 const tabContents = document.querySelectorAll('.tab-content');
@@ -165,6 +247,9 @@ function loadSettings(settings) {
     languageSelect.value = settings.language;
     launchAtLoginCheckbox.checked = settings.launchAtLogin;
     pauseAfterWorkCheckbox.checked = settings.pauseAfterWork;
+
+    // Appearance
+    loadAppearance(settings.appearance || {});
 }
 
 ipcRenderer.invoke('get-settings-and-locale').then(({ settings, localeData }) => {
@@ -238,7 +323,8 @@ saveButton.addEventListener('click', () => {
         customSoundComplete: currentSettings.customSoundComplete || '',
         pauseAfterWork: pauseAfterWorkCheckbox.checked, // Save new setting
         language: languageSelect.value,
-        launchAtLogin: launchAtLoginCheckbox.checked
+        launchAtLogin: launchAtLoginCheckbox.checked,
+        appearance: getAppearanceFromFields()
     };
     ipcRenderer.send('save-settings', newSettings);
     window.close();
