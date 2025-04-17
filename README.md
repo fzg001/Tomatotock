@@ -5,8 +5,8 @@
 **A simple Pomodoro timer for the system tray.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/github/package-json/v/YOUR_GITHUB_USERNAME/tomatotock)](https://github.com/YOUR_GITHUB_USERNAME/tomatotock/releases) <!-- Updated Repo Link -->
-[![Electron Version](https://img.shields.io/badge/electron-^22.3.27-blue.svg)](https://www.electronjs.org/)
+[![Version](https://img.shields.io/github/package-json/v/YOUR_GITHUB_USERNAME/tomatotock)](https://github.com/fzg001/Tomatotock/releases) <!-- Updated Repo Link -->
+[![Electron Version](https://img.shields.io/badge/electron-22.3.27-blue.svg)](https://www.electronjs.org/)
 [![Original Project](https://img.shields.io/badge/Based%20On-ivoronin/TomatoBar-orange)](https://github.com/ivoronin/TomatoBar)
 [![Language](https://img.shields.io/badge/language-English%20%7C%20%E4%B8%AD%E6%96%87-blue)](README.zh.md) <!-- Corrected link to README.zh.md -->
 
@@ -18,7 +18,7 @@ Tomatotock is a simple Pomodoro timer application designed to run discreetly in 
 
 ## Installation & Usage
 
-1.  Go to the [**Releases**](https://github.com/YOUR_GITHUB_USERNAME/tomatotock/releases) page.
+1.  Go to the [**Releases**](https://github.com/fzg001/Tomatotock/releases) page.
 2.  Download the latest version suitable for your operating system (e.g., `.exe` for Windows).
 3.  Install and run the application. The icon will appear in your system tray.
 4.  Left-click the tray icon to show/hide the timer window, right-click to open the menu (Settings, Quit).

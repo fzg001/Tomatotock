@@ -5,8 +5,8 @@
 **一个简单的系统托盘番茄钟计时器。**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/github/package-json/v/YOUR_GITHUB_USERNAME/tomatotock)](https://github.com/YOUR_GITHUB_USERNAME/tomatotock/releases) <!-- 更新仓库链接 -->
-[![Electron Version](https://img.shields.io/badge/electron-^22.3.27-blue.svg)](https://www.electronjs.org/)
+[![Version](https://img.shields.io/github/package-json/v/YOUR_GITHUB_USERNAME/tomatotock)](https://github.com/fzg001/Tomatotock/releases) <!-- 更新仓库链接 -->
+[![Electron Version](https://img.shields.io/badge/electron-22.3.27-blue.svg)](https://www.electronjs.org/)
 [![Language](https://img.shields.io/badge/language-English%20%7C%20%E4%B8%AD%E6%96%87-blue)](README.md) <!-- 指向英文 README -->
 
 </div>
@@ -17,7 +17,7 @@ Tomatotock 是一个简单的番茄钟计时器应用程序，设计用于在你
 
 ## 安装与使用
 
-1.  前往 [**Releases**](https://github.com/YOUR_GITHUB_USERNAME/tomatotock/releases) 页面。
+1.  前往 [**Releases**](https://github.com/fzg001/Tomatotock/releases) 页面。
 2.  下载适合你操作系统的最新版本（例如 Windows 的 `.exe` 文件）。
 3.  安装并运行应用程序。图标将出现在你的系统托盘中。
 4.  左键单击托盘图标可显示/隐藏计时器窗口，右键单击可打开菜单（设置、退出）。
