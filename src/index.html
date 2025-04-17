@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>番茄钟</title>
+    <!-- Link to external CSS file -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="timer-display" id="timer-display">25:00</div>
+        <!-- Add data-translate attribute for dynamic text -->
+        <div class="state-indicator" id="state-indicator" data-translate-base="state_idle">空闲</div>
+        <div class="controls">
+            <button id="start-pause-button" data-translate-base="button_start">开始</button>
+            <button id="reset-button" data-translate="button_reset">重置</button>
+            <!-- Settings button removed, access via tray menu -->
+        </div>
+    </div>
+
+    <!-- Audio elements for sounds -->
+    <audio id="audioPlayer" preload="auto"></audio>
+
+    <script src="./renderer.js"></script>
+</body>
+</html>

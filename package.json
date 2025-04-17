@@ -1,0 +1,17 @@
+{
+  "name": "tomato-bar-electron",
+  "version": "1.0.0",
+  "description": "A Pomodoro timer for Windows taskbar using Electron",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "electron-store": "^8.1.0"
+  },
+  "devDependencies": {
+    "electron": "^22.3.27"
+  }
+}
