@@ -5,7 +5,7 @@
 **A simple Pomodoro timer for the system tray.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/github/package-json/v/YOUR_GITHUB_USERNAME/tomatotock)](https://github.com/fzg001/Tomatotock/releases) <!-- Updated Repo Link -->
+[![Version](https://img.shields.io/github/package-json/v/fzg001/tomatotock)](https://github.com/fzg001/Tomatotock/releases) <!-- Updated Repo Link -->
 [![Electron Version](https://img.shields.io/badge/electron-22.3.27-blue.svg)](https://www.electronjs.org/)
 [![Original Project](https://img.shields.io/badge/Based%20On-ivoronin/TomatoBar-orange)](https://github.com/ivoronin/TomatoBar)
 [![Language](https://img.shields.io/badge/language-English%20%7C%20%E4%B8%AD%E6%96%87-blue)](README.zh.md) <!-- Corrected link to README.zh.md -->
