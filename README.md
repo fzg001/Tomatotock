@@ -28,7 +28,6 @@ Tomatotock is a simple Pomodoro timer application designed to run discreetly in 
    
 <div align="center">
   <img src="https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/9370A9916DAF8572C239306E9A9F4494.gif"  />
-  <img src="https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/079A607FE887CB76576F4B3ECA7B0808.gif"  />
 </div>
 
 ## Sources & Credits

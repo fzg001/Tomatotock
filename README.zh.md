@@ -28,7 +28,6 @@ Tomatotock 是一个简单的番茄钟计时器应用程序，设计用于在你
 
 <div align="center">
   <img src="https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/9370A9916DAF8572C239306E9A9F4494.gif"  />
-  <img src="https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/079A607FE887CB76576F4B3ECA7B0808.gif"  />
 </div>
 
 ## 来源与致谢
