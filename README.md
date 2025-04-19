@@ -9,9 +9,12 @@
 **A simple Pomodoro timer for the system tray.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/github/package-json/v/fzg001/tomatotock)](https://github.com/fzg001/Tomatotock/releases) <!-- Updated Repo Link -->
+[![Version](https://img.shields.io/github/package-json/v/fzg001/tomatotock)](https://github.com/fzg001/Tomatotock/releases)
 [![Electron Version](https://img.shields.io/badge/electron-22.3.27-blue.svg)](https://www.electronjs.org/)
-[![Language](https://img.shields.io/badge/language-English%20%7C%20%E4%B8%AD%E6%96%87-blue)](README.zh.md) <!-- Corrected link to README.zh.md -->
+[![Language](https://img.shields.io/badge/language-English%20%7C%20%E4%B8%AD%E6%96%87-blue)](README.zh.md)
+[![Status](https://img.shields.io/badge/status-active-success)](https://github.com/fzg001/Tomatotock)
+[![Platforms](https://img.shields.io/badge/platforms-Windows%7CmacOS-lightgrey)](https://github.com/fzg001/Tomatotock/releases)
+[![Pomodoro](https://img.shields.io/badge/pomodoro-25%20mins-red)](https://en.wikipedia.org/wiki/Pomodoro_Technique)
 
 </div>
 
@@ -32,13 +35,23 @@ Tomatotock is a simple Pomodoro timer application designed to run discreetly in 
 
 ## Sources & Credits
 
-*   **Inspiration**: [ivoronin/TomatoBar](https://github.com/ivoronin/TomatoBar)
-*   **App Icon**: Generated using Doubao AI.
-*   **Tray Icons**: [Tomato - Free Icon Download](https://icon-icons.com/icon/tomato/100803) (Source: icon-icons.com)
-*   **Default Sounds** (Source: Pixabay):
-    *   Start: [winding wall clock](https://pixabay.com/sound-effects/winding-wall-clock-66230/)
-    *   Complete: [Ding~](https://pixabay.com/sound-effects/ding-126626/)
-    *   Ticking: [Anxiety ticks](https://pixabay.com/sound-effects/anxiety-ticks-247694/)
+<div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+  <div style="width: 48%;">
+    <ul>
+      <li><strong>Inspiration</strong>: <a href="https://github.com/ivoronin/TomatoBar">ivoronin/TomatoBar</a></li>
+      <li><strong>App Icon</strong>: Generated using Doubao AI.</li>
+      <li><strong>Tray Icons</strong>: <a href="https://icon-icons.com/icon/tomato/100803">Tomato - Free Icon Download</a> (Source: icon-icons.com)</li>
+    </ul>
+  </div>
+  <div style="width: 48%;">
+    <p><strong>Default Sounds</strong> (Source: Pixabay):</p>
+    <ul>
+      <li><strong>Start</strong>: <a href="https://pixabay.com/sound-effects/winding-wall-clock-66230/">winding wall clock</a></li>
+      <li><strong>Complete</strong>: <a href="https://pixabay.com/sound-effects/ding-126626/">Ding~</a></li>
+      <li><strong>Ticking</strong>: <a href="https://pixabay.com/sound-effects/anxiety-ticks-247694/">Anxiety ticks</a></li>
+    </ul>
+  </div>
+</div>
 
 ## License
 

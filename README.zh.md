@@ -9,9 +9,13 @@
 **一个简单的系统托盘番茄钟计时器。**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/github/package-json/v/fzg001/tomatotock)](https://github.com/fzg001/Tomatotock/releases) <!-- 更新仓库链接 -->
+[![Version](https://img.shields.io/github/package-json/v/fzg001/tomatotock)](https://github.com/fzg001/Tomatotock/releases)
 [![Electron Version](https://img.shields.io/badge/electron-22.3.27-blue.svg)](https://www.electronjs.org/)
-[![Language](https://img.shields.io/badge/language-English%20%7C%20%E4%B8%AD%E6%96%87-blue)](README.md) <!-- 指向英文 README -->
+[![Language](https://img.shields.io/badge/language-English%20%7C%20%E4%B8%AD%E6%96%87-blue)](README.md)
+[![状态](https://img.shields.io/badge/状态-活跃-success)](https://github.com/fzg001/Tomatotock)
+[![支持平台](https://img.shields.io/badge/platforms-Windows%7CmacOS-lightgrey)](https://github.com/fzg001/Tomatotock/releases)
+[![番茄钟](https://img.shields.io/badge/番茄钟-25%20分钟-red)](https://zh.wikipedia.org/wiki/%E7%95%AA%E8%8C%84%E5%B7%A5%E4%BD%9C%E6%B3%95)
+
 
 </div>
 
@@ -32,13 +36,23 @@ Tomatotock 是一个简单的番茄钟计时器应用程序，设计用于在你
 
 ## 来源与致谢
 
-*   **项目灵感**: [ivoronin/TomatoBar](https://github.com/ivoronin/TomatoBar)
-*   **应用图标**: 使用豆包 AI 生成。
-*   **托盘图标**: [番茄 - 下载 免费图标](https://icon-icons.com/zh/%E5%9B%BE%E6%A0%87/%E7%95%AA%E8%8C%84/100803) (来源: icon-icons.com)
-*   **默认音频** (来源: Pixabay):
-    *   开始: [winding wall clock](https://pixabay.com/sound-effects/winding-wall-clock-66230/)
-    *   结束: [Ding~](https://pixabay.com/sound-effects/ding-126626/)
-    *   滴答: [Anxiety ticks](https://pixabay.com/sound-effects/anxiety-ticks-247694/)
+<div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+  <div style="width: 48%;">
+    <ul>
+      <li><strong>项目灵感</strong>: <a href="https://github.com/ivoronin/TomatoBar">ivoronin/TomatoBar</a></li>
+      <li><strong>应用图标</strong>: 使用豆包 AI 生成。</li>
+      <li><strong>托盘图标</strong>: <a href="https://icon-icons.com/zh/%E5%9B%BE%E6%A0%87/%E7%95%AA%E8%8C%84/100803">番茄 - 下载 免费图标</a> (来源: icon-icons.com)</li>
+    </ul>
+  </div>
+  <div style="width: 48%;">
+    <p><strong>默认音频</strong> (来源: Pixabay):</p>
+    <ul>
+      <li><strong>开始</strong>: <a href="https://pixabay.com/sound-effects/winding-wall-clock-66230/">winding wall clock</a></li>
+      <li><strong>结束</strong>: <a href="https://pixabay.com/sound-effects/ding-126626/">Ding~</a></li>
+      <li><strong>滴答</strong>: <a href="https://pixabay.com/sound-effects/anxiety-ticks-247694/">Anxiety ticks</a></li>
+    </ul>
+  </div>
+</div>
 
 ## 许可证
 
