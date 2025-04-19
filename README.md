@@ -1,3 +1,7 @@
+<p align="center">
+<img src="https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/%E6%96%B0%E5%9B%BE%E6%A0%87bd.png" width="128" height="128"/>
+<p>
+
 <div align="center">
 
 # Tomatotock 🍅
@@ -7,7 +11,6 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Version](https://img.shields.io/github/package-json/v/fzg001/tomatotock)](https://github.com/fzg001/Tomatotock/releases) <!-- Updated Repo Link -->
 [![Electron Version](https://img.shields.io/badge/electron-22.3.27-blue.svg)](https://www.electronjs.org/)
-[![Original Project](https://img.shields.io/badge/Based%20On-ivoronin/TomatoBar-orange)](https://github.com/ivoronin/TomatoBar)
 [![Language](https://img.shields.io/badge/language-English%20%7C%20%E4%B8%AD%E6%96%87-blue)](README.zh.md) <!-- Corrected link to README.zh.md -->
 
 </div>
@@ -22,6 +25,11 @@ Tomatotock is a simple Pomodoro timer application designed to run discreetly in 
 2.  Download the latest version suitable for your operating system (e.g., `.exe` for Windows).
 3.  Install and run the application. The icon will appear in your system tray.
 4.  Left-click the tray icon to show/hide the timer window, right-click to open the menu (Settings, Quit).
+   
+<div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+  <img src="https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/9370A9916DAF8572C239306E9A9F4494.gif" width="60%" />
+  <img src="https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/079A607FE887CB76576F4B3ECA7B0808.gif" width="40%" />
+</div>
 
 ## Sources & Credits
 

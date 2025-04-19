@@ -1,3 +1,7 @@
+<p align="center">
+<img src="https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/%E6%96%B0%E5%9B%BE%E6%A0%87bd.png" width="128" height="128"/>
+<p>
+
 <div align="center">
 
 # Tomatotock 🍅
@@ -21,6 +25,11 @@ Tomatotock 是一个简单的番茄钟计时器应用程序，设计用于在你
 2.  下载适合你操作系统的最新版本（例如 Windows 的 `.exe` 文件）。
 3.  安装并运行应用程序。图标将出现在你的系统托盘中。
 4.  左键单击托盘图标可显示/隐藏计时器窗口，右键单击可打开菜单（设置、退出）。
+
+<div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+  <img src="https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/9370A9916DAF8572C239306E9A9F4494.gif" width="60%" />
+  <img src="https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/079A607FE887CB76576F4B3ECA7B0808.gif" width="40%" />
+</div>
 
 ## 来源与致谢
 
