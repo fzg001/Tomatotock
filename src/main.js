@@ -44,7 +44,8 @@ const store = new Store({
             btnColor: '#333333',
             btnActiveColor: '#c9302c',
             btnActiveBorder: '#c9302c'
-        }
+        },
+        miniCardMode: false        // 新增：小卡片模式
     }
 });
 
@@ -97,16 +98,20 @@ const icons = {
 
 // --- Window Creation ---
 function createFlyoutWindow() {
+    // 根据小卡片模式调整窗口尺寸
+    const windowWidth = currentSettings.miniCardMode ? 105 : 280;
+    const windowHeight = currentSettings.miniCardMode ? 68 : 180; // 修改：将67.5改为68
+
     flyoutWindow = new BrowserWindow({
-        width: 280,
-        height: 180,
+        width: windowWidth,
+        height: windowHeight,
         show: false,
         frame: false,
         fullscreenable: false,
         resizable: false,
         movable: true, // 改为true，允许窗口移动
         transparent: true,
-        alwaysOnTop: currentSettings.keepVisibleWhenUnfocused, // 修改：使用新设置
+        alwaysOnTop: currentSettings.keepVisibleWhenUnfocused, // 删除isPinned条件
         skipTaskbar: true,
         webPreferences: {
             nodeIntegration: true,
@@ -125,7 +130,7 @@ function createFlyoutWindow() {
     // 修改：仅在非置顶模式下点击其他位置时才隐藏窗口
     flyoutWindow.on('blur', () => {
         if (flyoutWindow && !flyoutWindow.webContents.isDevToolsFocused()) {
-            // 修改：仅在 keepVisibleWhenUnfocused 为 false 时隐藏
+            // 修改：删除isPinned条件
             if (!currentSettings.keepVisibleWhenUnfocused) {
                 flyoutWindow.hide();
             }
@@ -502,9 +507,15 @@ ipcMain.on('save-settings', (event, newSettings) => {
 
     registerGlobalShortcuts(currentSettings); // 重新注册快捷键
 
-    // 更新窗口的 alwaysOnTop 状态
+    // 更新窗口的 alwaysOnTop 状态（删除isPinned条件）
     if (flyoutWindow && !flyoutWindow.isDestroyed()) {
         flyoutWindow.setAlwaysOnTop(currentSettings.keepVisibleWhenUnfocused);
+
+        // 如果小卡片模式发生变化，发送通知给渲染进程
+        if (newSettings.miniCardMode !== currentSettings.miniCardMode) {
+            flyoutWindow.webContents.send('toggle-mini-card-mode', newSettings.miniCardMode);
+        }
+
         flyoutWindow.webContents.send('settings-updated', { settings: currentSettings, localeData: currentLocaleData });
     }
 });
@@ -552,6 +563,40 @@ ipcMain.handle('get-stats', () => {
 
 ipcMain.handle('get-system-fonts', () => {
     return getSystemFonts();
+});
+
+// --- 新增：处理小卡片模式切换 ---
+ipcMain.on('toggle-mini-card', (event, enable) => {
+    if (!flyoutWindow) return;
+
+    const windowWidth = enable ? 105 : 280;
+    const windowHeight = enable ? 68 : 180; // 修改：将67.5改为68
+
+    // 保存当前窗口位置
+    const position = flyoutWindow.getPosition();
+
+    // 调整窗口大小
+    flyoutWindow.setSize(windowWidth, windowHeight);
+
+    // 保存设置
+    currentSettings.miniCardMode = enable;
+    store.set('miniCardMode', enable);
+
+    // 如果窗口可见，可能需要重新定位以确保窗口仍然完全可见
+    if (flyoutWindow.isVisible()) {
+        const bounds = screen.getPrimaryDisplay().bounds;
+        let [x, y] = position;
+
+        // 确保窗口不会超出屏幕边界
+        if (x + windowWidth > bounds.width) {
+            x = bounds.width - windowWidth;
+        }
+        if (y + windowHeight > bounds.height) {
+            y = bounds.height - windowHeight;
+        }
+
+        flyoutWindow.setPosition(x, y);
+    }
 });
 
 // 处理来自渲染进程的自动隐藏命令

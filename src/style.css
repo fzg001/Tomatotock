@@ -109,3 +109,24 @@ button:active {
 #start-pause-button.active:hover {
     background-color: #fbeaea;
 }
+
+/* 新增：小卡片模式样式 */
+.mini-card-mode .container {
+    width: 73px; /* 从140px缩小1/4 */
+    height: 47px; /* 修改：将67.5px改为68px */
+    padding: 8px; /* 减小内边距 */
+}
+
+.mini-card-mode .timer-display {
+    font-size: 21px; /* 从28px缩小 */
+    margin-bottom: 3px; /* 减小间距 */
+}
+
+.mini-card-mode .state-indicator {
+    font-size: 9px; /* 从10px缩小 */
+    margin-bottom: 0;
+}
+
+.mini-card-mode .controls {
+    display: none; /* 隐藏按钮 */
+}

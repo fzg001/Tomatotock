@@ -28,6 +28,7 @@ const hotkeyStartPauseInput = document.getElementById('hotkey-start-pause');
 const hotkeyResetInput = document.getElementById('hotkey-reset');
 const saveButton = document.getElementById('save-button');
 const cancelButton = document.getElementById('cancel-button');
+const miniCardModeCheckbox = document.getElementById('mini-card-mode'); // 新增
 
 // 外观设置元素
 const appearanceFields = {
@@ -262,6 +263,7 @@ function loadSettings(settings) {
     enableHotkeysCheckbox.checked = settings.enableHotkeys !== false;
     hotkeyStartPauseInput.value = settings.hotkeyStartPause || 'Ctrl+Alt+P';
     hotkeyResetInput.value = settings.hotkeyReset || 'Ctrl+Alt+R';
+    miniCardModeCheckbox.checked = settings.miniCardMode === true; // 新增
 
     // Appearance
     loadAppearance(settings.appearance || {});
@@ -366,6 +368,7 @@ saveButton.addEventListener('click', () => {
         customSoundComplete: currentSettings.customSoundComplete || '',
         pauseAfterWork: pauseAfterWorkCheckbox.checked, // Save new setting
         autoHideOnStart: autoHideOnStartCheckbox.checked, // 新增
+        miniCardMode: miniCardModeCheckbox.checked, // 新增
         language: languageSelect.value,
         launchAtLogin: launchAtLoginCheckbox.checked,
         enableStats: enableStatsCheckbox.checked,

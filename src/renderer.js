@@ -9,12 +9,6 @@ const resetButton = document.getElementById('reset-button');
 const audioPlayer = document.getElementById('audioPlayer');
 const container = document.querySelector('.container'); // For state classes
 
-const sounds = {
-    start: path.join(__dirname, 'Sounds', 'windup.wav'),
-    tick: path.join(__dirname, 'Sounds', 'ticking.wav'),
-    complete: path.join(__dirname, 'Sounds', 'ding.wav')
-};
-
 // Default settings (will be overwritten)
 let timers = {
     work: 25 * 60,
@@ -25,6 +19,7 @@ let longBreakIntervalSetting = 4;
 let enableCompletionSoundSetting = true;
 let enableTickingSoundSetting = true;
 let pauseAfterWorkSetting = false;
+let miniCardMode = false; // 新增：小卡片模式状态
 
 let timerInterval = null;
 let remainingTime = timers.work;
@@ -366,11 +361,24 @@ function applyAppearance(appearance) {
     root.style.setProperty('--btn-active-border', ap.btnActiveBorder);
 }
 
+// --- 新增：切换小卡片模式 ---
+function toggleMiniCardMode(enable) {
+    miniCardMode = enable;
+    if (enable) {
+        document.body.classList.add('mini-card-mode');
+    } else {
+        document.body.classList.remove('mini-card-mode');
+    }
+    // 通知主进程调整窗口大小
+    ipcRenderer.send('toggle-mini-card', enable);
+}
+
 // --- Event Listeners ---
 // 只绑定一次，避免重复绑定
 if (!window._tomatotockEventBound) {
     startPauseButton.addEventListener('click', togglePauseResume);
     resetButton.addEventListener('click', resetCurrentTimer);
+    
     window._tomatotockEventBound = true;
 }
 
@@ -378,6 +386,7 @@ if (!window._tomatotockEventBound) {
 window.addEventListener('beforeunload', () => {
     startPauseButton.removeEventListener('click', togglePauseResume);
     resetButton.removeEventListener('click', resetCurrentTimer);
+    
     // 释放音频资源
     if (audioPlayer) {
         audioPlayer.pause();
@@ -403,6 +412,11 @@ ipcRenderer.on('initialize-data', (event, { settings, localeData }) => {
     pauseAfterWorkSetting = settings.pauseAfterWork;
     remainingTime = timers[currentTimerType];
 
+    // 新增：应用小卡片模式设置
+    if (settings.miniCardMode) {
+        toggleMiniCardMode(true);
+    }
+    
     applyTranslations();
     applyAppearance(settings.appearance);
     updateDisplay();
@@ -427,6 +441,9 @@ ipcRenderer.on('settings-updated', (event, { settings, localeData }) => {
         stopSound();
     }
 
+    // 新增：更新小卡片模式
+    toggleMiniCardMode(settings.miniCardMode);
+    
     applyTranslations();
     applyAppearance(settings.appearance);
     updateDisplay();
@@ -438,4 +455,9 @@ ipcRenderer.on('hotkey-start-pause', () => {
 });
 ipcRenderer.on('hotkey-reset', () => {
     resetCurrentTimer();
+});
+
+// 新增：切换小卡片模式的IPC监听
+ipcRenderer.on('toggle-mini-card-mode', (event, enable) => {
+    toggleMiniCardMode(enable);
 });
