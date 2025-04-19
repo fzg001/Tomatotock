@@ -44,6 +44,7 @@ html, body {
     justify-content: center;
     padding: 20px;
     border: 1px solid rgba(0, 0, 0, 0.1);
+    -webkit-app-region: drag; /* 允许拖动窗口 */
 }
 
 /* Timer Display */
@@ -71,6 +72,7 @@ html, body {
 .controls {
     display: flex;
     gap: 10px; /* Space between buttons */
+    -webkit-app-region: no-drag; /* 按钮区域不可拖动 */
 }
 
 button {
@@ -85,6 +87,7 @@ button {
     transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s;
     min-width: 70px; /* Ensure buttons have a minimum width */
     text-align: center;
+    -webkit-app-region: no-drag; /* 确保按钮不影响拖动 */
 }
 
 button:hover {

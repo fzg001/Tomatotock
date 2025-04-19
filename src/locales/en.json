@@ -5,6 +5,8 @@
     "menu_settings": "Settings...",
     "menu_stats": "Stats/History",
     "menu_quit": "Quit",
+    "menu_restore_position": "Restore Position",
+    "menu_keep_visible_when_unfocused": "Keep Visible When Unfocused",
     "state_idle": "Idle",
     "state_work": "Work",
     "state_shortrest": "Short Break",

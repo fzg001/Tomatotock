@@ -26,6 +26,8 @@ const store = new Store({
         hotkeyReset: 'Ctrl+Alt+R',
         enableStats: true, // 新增统计功能开关
         language: 'zh',
+        windowPosition: null, // 新增：记住窗口位置
+        keepVisibleWhenUnfocused: false,  // 修改：重命名 alwaysOnTop
         appearance: {
             fontFamily: 'default', // 新增字体设置
             cardBg: '#f0f0f0',
@@ -101,9 +103,9 @@ function createFlyoutWindow() {
         frame: false,
         fullscreenable: false,
         resizable: false,
-        movable: false,
+        movable: true, // 改为true，允许窗口移动
         transparent: true,
-        alwaysOnTop: true,
+        alwaysOnTop: currentSettings.keepVisibleWhenUnfocused, // 修改：使用新设置
         skipTaskbar: true,
         webPreferences: {
             nodeIntegration: true,
@@ -119,9 +121,22 @@ function createFlyoutWindow() {
         flyoutWindow.webContents.send('initialize-data', { settings: currentSettings, localeData: currentLocaleData });
     });
 
+    // 修改：仅在非置顶模式下点击其他位置时才隐藏窗口
     flyoutWindow.on('blur', () => {
         if (flyoutWindow && !flyoutWindow.webContents.isDevToolsFocused()) {
-            flyoutWindow.hide();
+            // 修改：仅在 keepVisibleWhenUnfocused 为 false 时隐藏
+            if (!currentSettings.keepVisibleWhenUnfocused) {
+                flyoutWindow.hide();
+            }
+        }
+    });
+
+    // 保存窗口位置
+    flyoutWindow.on('moved', () => {
+        if (flyoutWindow && !flyoutWindow.isDestroyed()) {
+            const position = flyoutWindow.getPosition();
+            currentSettings.windowPosition = { x: position[0], y: position[1] };
+            store.set('windowPosition', currentSettings.windowPosition);
         }
     });
 
@@ -208,7 +223,45 @@ function createTray() {
 function buildContextMenu() {
     const contextMenuTemplate = [
         { label: translate('menu_show_hide'), click: () => toggleWindow(tray.getBounds()) },
-        { label: translate('menu_stats'), click: createStatsWindow }, // 新增统计菜单
+        { 
+            label: translate('menu_restore_position'), 
+            click: () => {
+                if (flyoutWindow) {
+                    const position = getWindowPosition(tray.getBounds());
+                    flyoutWindow.setPosition(position.x, position.y);
+                    // 重置存储的位置
+                    currentSettings.windowPosition = null;
+                    store.set('windowPosition', null);
+                    if (!flyoutWindow.isVisible()) {
+                        flyoutWindow.show();
+                    }
+                }
+            }
+        },
+        { 
+            label: translate('menu_keep_visible_when_unfocused'), // 修改：使用新的翻译键
+            type: 'checkbox',
+            checked: currentSettings.keepVisibleWhenUnfocused, // 修改：使用新设置
+            click: () => {
+                currentSettings.keepVisibleWhenUnfocused = !currentSettings.keepVisibleWhenUnfocused; // 修改：切换新设置
+                if (flyoutWindow) {
+                    flyoutWindow.setAlwaysOnTop(currentSettings.keepVisibleWhenUnfocused); // 保持 alwaysOnTop 行为，因为这是 Electron 控制窗口是否置顶的属性
+
+                    // 如果切换到非置顶状态且窗口当前没有焦点，则需要隐藏窗口
+                    if (!currentSettings.keepVisibleWhenUnfocused && !flyoutWindow.isFocused()) {
+                        flyoutWindow.hide();
+                    }
+
+                    // 如果切换到置顶状态且窗口当前不可见，则需要显示窗口
+                    if (currentSettings.keepVisibleWhenUnfocused && !flyoutWindow.isVisible()) {
+                        toggleWindow(tray.getBounds());
+                    }
+                }
+                store.set('keepVisibleWhenUnfocused', currentSettings.keepVisibleWhenUnfocused); // 修改：保存新设置
+                buildContextMenu(); // 重建菜单以更新选中状态
+            }
+        },
+        { label: translate('menu_stats'), click: createStatsWindow },
         { label: translate('menu_settings'), click: createSettingsWindow },
         { type: 'separator' },
         { label: translate('menu_quit'), click: () => app.quit() }
@@ -242,9 +295,14 @@ function toggleWindow(bounds) {
     if (flyoutWindow.isVisible()) {
         flyoutWindow.hide();
     } else {
-        const trayBounds = bounds || tray.getBounds();
-        const position = getWindowPosition(trayBounds);
-        flyoutWindow.setPosition(position.x, position.y);
+        // 如果有存储的位置，使用它；否则使用默认位置
+        if (currentSettings.windowPosition) {
+            flyoutWindow.setPosition(currentSettings.windowPosition.x, currentSettings.windowPosition.y);
+        } else {
+            const trayBounds = bounds || tray.getBounds();
+            const position = getWindowPosition(trayBounds);
+            flyoutWindow.setPosition(position.x, position.y);
+        }
         flyoutWindow.show();
         flyoutWindow.focus();
     }
@@ -410,8 +468,16 @@ ipcMain.on('save-settings', (event, newSettings) => {
         ...store.get(), // 用当前存储的设置为基础
         ...newSettings
     };
+    // 确保 keepVisibleWhenUnfocused 也被正确合并（如果它在 newSettings 中）
+    if (newSettings.hasOwnProperty('keepVisibleWhenUnfocused')) {
+        completeSettings.keepVisibleWhenUnfocused = newSettings.keepVisibleWhenUnfocused;
+    } else {
+        // 如果 newSettings 中没有，则从 store 中获取旧值
+        completeSettings.keepVisibleWhenUnfocused = store.get('keepVisibleWhenUnfocused', false); // 提供默认值
+    }
+
     store.set(completeSettings);
-    currentSettings = completeSettings;
+    currentSettings = completeSettings; // 更新当前设置缓存
 
     try {
         const appPath = app.isPackaged ? process.execPath : app.getPath('exe');
@@ -435,7 +501,9 @@ ipcMain.on('save-settings', (event, newSettings) => {
 
     registerGlobalShortcuts(currentSettings); // 重新注册快捷键
 
+    // 更新窗口的 alwaysOnTop 状态
     if (flyoutWindow && !flyoutWindow.isDestroyed()) {
+        flyoutWindow.setAlwaysOnTop(currentSettings.keepVisibleWhenUnfocused);
         flyoutWindow.webContents.send('settings-updated', { settings: currentSettings, localeData: currentLocaleData });
     }
 });
