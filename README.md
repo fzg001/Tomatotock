@@ -26,9 +26,9 @@ Tomatotock is a simple Pomodoro timer application designed to run discreetly in 
 3.  Install and run the application. The icon will appear in your system tray.
 4.  Left-click the tray icon to show/hide the timer window, right-click to open the menu (Settings, Quit).
    
-<div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
-  <img src="https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/9370A9916DAF8572C239306E9A9F4494.gif" width="60%" />
-  <img src="https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/079A607FE887CB76576F4B3ECA7B0808.gif" width="40%" />
+<div align="center">
+  <img src="https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/9370A9916DAF8572C239306E9A9F4494.gif"  />
+  <img src="https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/079A607FE887CB76576F4B3ECA7B0808.gif"  />
 </div>
 
 ## Sources & Credits
