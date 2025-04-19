@@ -72,7 +72,7 @@
             flex-basis: 170px;
             flex-shrink: 0;
             padding-right: 0;
-            text-align: left; /* 关键：左对齐 */
+            text-align: left;
             color: #555;
             font-size: 15px;
             line-height: 38px;
@@ -84,7 +84,7 @@
             display: flex;
             align-items: center;
             min-width: 0;
-            justify-content: flex-end; /* 关键：控件右对齐 */
+            justify-content: flex-end;
             height: 38px;
         }
         input[type="number"], select, input[type="text"], input[type="color"] {
@@ -249,6 +249,72 @@
             .form-group label { flex-basis: 110px; font-size: 13px;}
             .tab-button { font-size: 13px; padding: 10px 10px; }
         }
+        /* Switch 样式（修正小球能滑到最右侧） */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 34px !important;
+            height: 20px !important;
+            min-width: 34px !important;
+            max-width: 34px !important;
+            min-height: 20px !important;
+            max-height: 20px !important;
+            margin-left: -10px; /* 向左平移10px */
+            margin-right: 0;
+            vertical-align: middle;
+            box-sizing: content-box !important;
+            transform: translateX(-10px); /* 真正左移10px */
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #e5e7eb;
+            transition: .2s;
+            border-radius: 20px;
+            border: 1.5px solid #e5e7eb;
+            width: 100% !important;
+            height: 100% !important;
+            min-width: 0 !important;
+            min-height: 0 !important;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 2px;
+            top: 2px;
+            background-color: #fff;
+            transition: .2s;
+            border-radius: 50%;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .switch input:checked + .slider:before {
+            /* 34px(总宽) - 16px(球宽) - 2px(左边距) = 16px */
+            transform: translateX(16px);
+            background-color: #fff;
+        }
+        .switch input:checked + .slider {
+            background-color: #5cb85c;
+            border-color: #5cb85c;
+        }
+        .switch input:focus + .slider {
+            box-shadow: 0 0 0 2px #e6f9ea;
+        }
+        /* 热键输入框更紧凑，右对齐 */
+        .form-group .control input[type="text"] {
+            width: 100px;
+            min-width: 80px;
+            max-width: 180px;
+            text-align: right;
+            margin-right: 0;
+        }
     </style>
 </head>
 <body>
@@ -294,13 +360,19 @@
             <div class="form-group">
                 <label for="enable-completion-sound" data-translate="settings_enable_completion_sound">启用开始/结束提示音:</label>
                 <div class="control">
-                    <input type="checkbox" id="enable-completion-sound">
+                    <label class="switch">
+                        <input type="checkbox" id="enable-completion-sound">
+                        <span class="slider"></span>
+                    </label>
                 </div>
             </div>
             <div class="form-group">
                 <label for="enable-ticking-sound" data-translate="settings_enable_ticking_sound">启用滴答声:</label>
                 <div class="control">
-                    <input type="checkbox" id="enable-ticking-sound">
+                    <label class="switch">
+                        <input type="checkbox" id="enable-ticking-sound">
+                        <span class="slider"></span>
+                    </label>
                 </div>
             </div>
             <hr> <!-- Separator -->
@@ -344,19 +416,28 @@
             <div class="form-group">
                 <label for="launch-at-login" data-translate="settings_launch_at_login">登录时启动:</label>
                 <div class="control">
-                    <input type="checkbox" id="launch-at-login">
+                    <label class="switch">
+                        <input type="checkbox" id="launch-at-login">
+                        <span class="slider"></span>
+                    </label>
                 </div>
             </div>
             <div class="form-group">
                 <label for="pause-after-work" data-translate="settings_pause_after_work">工作结束后暂停:</label>
                 <div class="control">
-                    <input type="checkbox" id="pause-after-work">
+                    <label class="switch">
+                        <input type="checkbox" id="pause-after-work">
+                        <span class="slider"></span>
+                    </label>
                 </div>
             </div>
             <div class="form-group">
                 <label for="enable-stats" data-translate="settings_enable_stats">启用统计功能:</label>
                 <div class="control">
-                    <input type="checkbox" id="enable-stats">
+                    <label class="switch">
+                        <input type="checkbox" id="enable-stats">
+                        <span class="slider"></span>
+                    </label>
                 </div>
             </div>
         </div>
@@ -464,7 +545,10 @@
             <div class="form-group">
                 <label for="enable-hotkeys" data-translate="settings_enable_hotkeys">启用全部快捷键:</label>
                 <div class="control">
-                    <input type="checkbox" id="enable-hotkeys">
+                    <label class="switch">
+                        <input type="checkbox" id="enable-hotkeys">
+                        <span class="slider"></span>
+                    </label>
                 </div>
             </div>
             <div class="form-group">
