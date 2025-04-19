@@ -333,6 +333,11 @@
             border-color: #5cb85c;
             box-shadow: 0 0 0 2px #e6f9ea;
         }
+        
+        /* 声音设置标签固定宽度 */
+        .sound-label {
+            flex-basis: 220px !important;
+        }
     </style>
 </head>
 <body>
@@ -376,7 +381,7 @@
         <!-- 声音 Tab -->
         <div id="tab-sounds" class="tab-content">
             <div class="form-group">
-                <label for="enable-completion-sound" data-translate="settings_enable_completion_sound">启用开始/结束提示音:</label>
+                <label for="enable-completion-sound" class="sound-label" data-translate="settings_enable_completion_sound">启用开始/结束提示音:</label>
                 <div class="control">
                     <label class="switch">
                         <input type="checkbox" id="enable-completion-sound">
@@ -385,7 +390,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <label for="enable-ticking-sound" data-translate="settings_enable_ticking_sound">启用滴答声:</label>
+                <label for="enable-ticking-sound" class="sound-label" data-translate="settings_enable_ticking_sound">启用滴答声:</label>
                 <div class="control">
                     <label class="switch">
                         <input type="checkbox" id="enable-ticking-sound">
@@ -395,7 +400,7 @@
             </div>
             <hr> <!-- Separator -->
             <div class="form-group">
-                <label for="custom-sound-start-button" data-translate="settings_custom_sound_start">自定义开始音效:</label>
+                <label for="custom-sound-start-button" class="sound-label" data-translate="settings_custom_sound_start">自定义开始音效:</label>
                 <div class="control file-select-group">
                     <button id="custom-sound-start-button" class="select-sound-button" data-sound-type="start" data-translate="settings_select_file">选择文件</button>
                     <span id="custom-sound-start-path" data-translate-base="settings_no_file_selected">未选择文件</span>
@@ -403,7 +408,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <label for="custom-sound-tick-button" data-translate="settings_custom_sound_tick">自定义滴答音效:</label>
+                <label for="custom-sound-tick-button" class="sound-label" data-translate="settings_custom_sound_tick">自定义滴答音效:</label>
                 <div class="control file-select-group">
                     <button id="custom-sound-tick-button" class="select-sound-button" data-sound-type="tick" data-translate="settings_select_file">选择文件</button>
                     <span id="custom-sound-tick-path" data-translate-base="settings_no_file_selected">未选择文件</span>
@@ -411,7 +416,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <label for="custom-sound-complete-button" data-translate="settings_custom_sound_complete">自定义结束音效:</label>
+                <label for="custom-sound-complete-button" class="sound-label" data-translate="settings_custom_sound_complete">自定义结束音效:</label>
                 <div class="control file-select-group">
                     <button id="custom-sound-complete-button" class="select-sound-button" data-sound-type="complete" data-translate="settings_select_file">选择文件</button>
                     <span id="custom-sound-complete-path" data-translate-base="settings_no_file_selected">未选择文件</span>
