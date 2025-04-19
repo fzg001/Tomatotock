@@ -2,6 +2,7 @@ const { app, BrowserWindow, Tray, Menu, nativeImage, ipcMain, screen, Notificati
 const path = require('path');
 const Store = require('electron-store');
 const fs = require('fs');
+const { execSync } = require('child_process'); // 用于获取系统字体
 
 // --- 设置存储 ---
 const store = new Store({
@@ -26,6 +27,7 @@ const store = new Store({
         enableStats: true, // 新增统计功能开关
         language: 'zh',
         appearance: {
+            fontFamily: 'default', // 新增字体设置
             cardBg: '#f0f0f0',
             cardOpacity: 1,
             timerColor: '#444444',
@@ -305,6 +307,65 @@ function registerGlobalShortcuts(settings) {
     }
 }
 
+// 获取系统字体列表
+function getSystemFonts() {
+    try {
+        let fonts = [];
+        
+        if (process.platform === 'win32') {
+            // Windows系统
+            const output = execSync('reg query "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts" /s').toString();
+            const fontRegex = /\s+(.+) \(TrueType\)\s+REG_SZ\s+(.+)/g;
+            let match;
+            
+            while ((match = fontRegex.exec(output)) !== null) {
+                const fontName = match[1].trim().replace(' (TrueType)', '');
+                fonts.push(fontName);
+            }
+        } else if (process.platform === 'darwin') {
+            // macOS系统
+            const fontDirs = [
+                '/System/Library/Fonts',
+                '/Library/Fonts',
+                `${app.getPath('home')}/Library/Fonts`
+            ];
+            
+            fontDirs.forEach(dir => {
+                if (fs.existsSync(dir)) {
+                    const files = fs.readdirSync(dir);
+                    files.forEach(file => {
+                        if (file.endsWith('.ttf') || file.endsWith('.otf')) {
+                            fonts.push(file.replace(/\.(ttf|otf)$/, ''));
+                        }
+                    });
+                }
+            });
+        } else if (process.platform === 'linux') {
+            // Linux系统
+            if (fs.existsSync('/usr/share/fonts')) {
+                const output = execSync('fc-list : family').toString();
+                fonts = Array.from(new Set(output.split('\n').map(line => line.trim()).filter(Boolean)));
+            }
+        }
+        
+        // 添加一些常见字体
+        const commonFonts = [
+            'Arial', 'Helvetica', 'Times New Roman', 'Courier New', 'Verdana', 
+            'Georgia', 'Palatino', 'Garamond', 'Bookman', 'Tahoma', 'Trebuchet MS',
+            '宋体', '黑体', '微软雅黑', '楷体', '仿宋', '隶书', '幼圆'
+        ];
+        
+        // 合并去重
+        fonts = Array.from(new Set([...fonts, ...commonFonts]));
+        
+        // 按字母排序
+        return fonts.sort();
+    } catch (error) {
+        console.error('获取系统字体失败:', error);
+        return [];
+    }
+}
+
 // --- IPC Handling ---
 ipcMain.on('timer-update', (event, newState) => {
     currentTimerState = newState;
@@ -418,6 +479,10 @@ ipcMain.on('work-session-complete', (event, { remark }) => {
 
 ipcMain.handle('get-stats', () => {
     return statsStore.get('records');
+});
+
+ipcMain.handle('get-system-fonts', () => {
+    return getSystemFonts();
 });
 
 // Helper to update tooltip based on stored state

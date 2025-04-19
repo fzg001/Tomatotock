@@ -321,6 +321,7 @@ function applyTranslations() {
 // --- Apply Appearance to UI ---
 function applyAppearance(appearance) {
     const ap = {
+        fontFamily: 'default',
         cardBg: '#f0f0f0',
         cardOpacity: 1,
         timerColor: '#444444',
@@ -337,6 +338,14 @@ function applyAppearance(appearance) {
         ...(appearance || {})
     };
     const root = document.documentElement;
+    
+    // 应用字体设置
+    if (ap.fontFamily && ap.fontFamily !== 'default') {
+        root.style.setProperty('--font-family', `"${ap.fontFamily}", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`);
+    } else {
+        root.style.setProperty('--font-family', `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`);
+    }
+    
     root.style.setProperty('--card-bg', ap.cardBg);
     root.style.setProperty('--card-opacity', ap.cardOpacity);
     root.style.setProperty('--timer-color', ap.timerColor);

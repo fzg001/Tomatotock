@@ -129,6 +129,7 @@
             display: flex;
             align-items: center;
             width: 100%;
+            padding-left: 10px; /* 新增：整体向右平移10px */
         }
         .file-select-group button.select-sound-button {
             margin-right: 10px;
@@ -260,11 +261,11 @@
             max-width: 34px !important;
             min-height: 20px !important;
             max-height: 20px !important;
-            margin-left: -10px; /* 向左平移10px */
+            margin-left: -10px; /* 修改：从0到-10px，向左平移10px */
             margin-right: 0;
             vertical-align: middle;
             box-sizing: content-box !important;
-            transform: translateX(-10px); /* 真正左移10px */
+            transform: translateX(-10px); /* 修改：从0到-10px，向左平移10px */
         }
         .switch input {
             opacity: 0;
@@ -315,6 +316,22 @@
             max-width: 180px;
             text-align: right;
             margin-right: 0;
+        }
+        /* 字体选择器样式 */
+        .font-select {
+            width: 100%;
+            max-width: 250px;
+            padding: 8px 14px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 15px;
+            background: #fff;
+            height: 38px;
+            box-sizing: border-box;
+        }
+        .font-select:focus {
+            border-color: #5cb85c;
+            box-shadow: 0 0 0 2px #e6f9ea;
         }
     </style>
 </head>
@@ -445,6 +462,15 @@
 
         <!-- 外观 Tab -->
         <div id="tab-appearance" class="tab-content">
+            <div class="form-group">
+                <label for="appearance-font-family" data-translate="appearance_font_family">字体选择:</label>
+                <div class="control">
+                    <select id="appearance-font-family" class="font-select">
+                        <option value="default">系统默认字体</option>
+                        <!-- 将由JavaScript填充系统字体 -->
+                    </select>
+                </div>
+            </div>
             <div class="form-group">
                 <label for="appearance-card-bg" data-translate="appearance_card_bg">卡片背景色:</label>
                 <div class="control">

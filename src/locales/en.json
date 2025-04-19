@@ -42,6 +42,7 @@
     "settings_pause_after_work": "Pause after Work Session:",
     "settings_save": "Save",
     "settings_cancel": "Cancel",
+    "appearance_font_family": "Font Family:",
     "appearance_card_bg": "Card Background:",
     "appearance_card_opacity": "Card Opacity:",
     "appearance_timer_color": "Timer Font Color:",

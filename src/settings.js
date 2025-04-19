@@ -18,6 +18,7 @@ const removeSoundStartButton = document.getElementById('remove-sound-start-butto
 const removeSoundTickButton = document.getElementById('remove-sound-tick-button'); 
 const removeSoundCompleteButton = document.getElementById('remove-sound-complete-button'); 
 const languageSelect = document.getElementById('language-select');
+const fontFamilySelect = document.getElementById('appearance-font-family'); // 新增
 const launchAtLoginCheckbox = document.getElementById('launch-at-login'); // New
 const pauseAfterWorkCheckbox = document.getElementById('pause-after-work'); // New
 const enableStatsCheckbox = document.getElementById('enable-stats');
@@ -29,6 +30,7 @@ const cancelButton = document.getElementById('cancel-button');
 
 // 外观设置元素
 const appearanceFields = {
+    fontFamily: document.getElementById('appearance-font-family'), // 新增
     cardBg: document.getElementById('appearance-card-bg'),
     cardOpacity: document.getElementById('appearance-card-opacity'),
     timerColor: document.getElementById('appearance-timer-color'),
@@ -48,6 +50,7 @@ const appearanceFields = {
 
 // 默认外观设置
 const defaultAppearance = {
+    fontFamily: 'default', // 新增默认字体设置
     cardBg: '#f0f0f0',
     cardOpacity: 1,
     timerColor: '#444444',
@@ -65,6 +68,7 @@ const defaultAppearance = {
 
 function loadAppearance(appearance) {
     const ap = { ...defaultAppearance, ...appearance };
+    appearanceFields.fontFamily.value = ap.fontFamily || 'default'; // 新增
     appearanceFields.cardBg.value = ap.cardBg;
     appearanceFields.cardOpacity.value = ap.cardOpacity;
     appearanceFields.cardOpacityValue.textContent = ap.cardOpacity;
@@ -83,6 +87,7 @@ function loadAppearance(appearance) {
 
 function getAppearanceFromFields() {
     return {
+        fontFamily: appearanceFields.fontFamily.value, // 新增
         cardBg: appearanceFields.cardBg.value,
         cardOpacity: parseFloat(appearanceFields.cardOpacity.value),
         timerColor: appearanceFields.timerColor.value,
@@ -260,9 +265,37 @@ function loadSettings(settings) {
     loadAppearance(settings.appearance || {});
 }
 
+// 加载系统字体
+async function loadSystemFonts() {
+    try {
+        const fonts = await ipcRenderer.invoke('get-system-fonts');
+        
+        // 清除现有选项（保留默认选项）
+        while (fontFamilySelect.options.length > 1) {
+            fontFamilySelect.remove(1);
+        }
+        
+        // 添加系统字体选项
+        fonts.forEach(font => {
+            const option = document.createElement('option');
+            option.value = font;
+            option.textContent = font;
+            fontFamilySelect.appendChild(option);
+        });
+        
+        // 如果有选定字体，设置选择器的值
+        if (currentSettings.appearance && currentSettings.appearance.fontFamily) {
+            fontFamilySelect.value = currentSettings.appearance.fontFamily;
+        }
+    } catch (error) {
+        console.error('加载系统字体失败:', error);
+    }
+}
+
 ipcRenderer.invoke('get-settings-and-locale').then(({ settings, localeData }) => {
     currentLocaleData = localeData;
     loadSettings(settings); // 使用新函数加载设置
+    loadSystemFonts(); // 加载系统字体
     applyTranslations(); // Apply translations after loading locale and settings
 });
 
