@@ -135,8 +135,8 @@ function createSettingsWindow() {
     }
 
     settingsWindow = new BrowserWindow({
-        width: 480,
-        height: 460,
+        width: 560, // 原来是480，增加1/6后为560
+        height: 537, // 原来是460，增加1/6后为537
         resizable: false,
         fullscreenable: false,
         modal: true,
@@ -165,8 +165,8 @@ function createStatsWindow() {
     }
 
     statsWindow = new BrowserWindow({
-        width: 480,
-        height: 520,
+        width: 560, // 原来是480，增加1/6后为560
+        height: 607, // 原来是520，增加1/6后为607
         resizable: false,
         modal: true,
         show: true,

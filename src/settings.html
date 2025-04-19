@@ -72,6 +72,7 @@
             flex-basis: 170px;
             flex-shrink: 0;
             padding-right: 0;
+            padding-left: 20px; /* 新增：标签右移px */
             text-align: left;
             color: #555;
             font-size: 15px;
@@ -296,8 +297,8 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.08);
         }
         .switch input:checked + .slider:before {
-            /* 34px(总宽) - 16px(球宽) - 2px(左边距) = 16px */
-            transform: translateX(16px);
+            /* 滑块移动距离 */
+            transform: translateX(34px);
             background-color: #fff;
         }
         .switch input:checked + .slider {
