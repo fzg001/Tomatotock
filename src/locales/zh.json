@@ -38,6 +38,7 @@
     "settings_language": "语言:",
     "settings_launch_at_login": "登录时启动:",
     "settings_pause_after_work": "工作结束后暂停:",
+    "settings_auto_hide_on_start": "点击开始后自动隐藏:",
     "settings_enable_stats": "启用统计功能:",
     "settings_enable_hotkeys": "启用全部快捷键:",
     "settings_hotkey_start_pause": "开始/暂停快捷键:",

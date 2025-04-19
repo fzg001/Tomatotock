@@ -21,6 +21,7 @@ const languageSelect = document.getElementById('language-select');
 const fontFamilySelect = document.getElementById('appearance-font-family'); // 新增
 const launchAtLoginCheckbox = document.getElementById('launch-at-login'); // New
 const pauseAfterWorkCheckbox = document.getElementById('pause-after-work'); // New
+const autoHideOnStartCheckbox = document.getElementById('auto-hide-on-start'); // 新增
 const enableStatsCheckbox = document.getElementById('enable-stats');
 const enableHotkeysCheckbox = document.getElementById('enable-hotkeys');
 const hotkeyStartPauseInput = document.getElementById('hotkey-start-pause');
@@ -256,6 +257,7 @@ function loadSettings(settings) {
     languageSelect.value = settings.language;
     launchAtLoginCheckbox.checked = settings.launchAtLogin;
     pauseAfterWorkCheckbox.checked = settings.pauseAfterWork;
+    autoHideOnStartCheckbox.checked = settings.autoHideOnStart !== false; // 新增
     enableStatsCheckbox.checked = settings.enableStats !== false;
     enableHotkeysCheckbox.checked = settings.enableHotkeys !== false;
     hotkeyStartPauseInput.value = settings.hotkeyStartPause || 'Ctrl+Alt+P';
@@ -363,6 +365,7 @@ saveButton.addEventListener('click', () => {
         customSoundTick: currentSettings.customSoundTick || '',
         customSoundComplete: currentSettings.customSoundComplete || '',
         pauseAfterWork: pauseAfterWorkCheckbox.checked, // Save new setting
+        autoHideOnStart: autoHideOnStartCheckbox.checked, // 新增
         language: languageSelect.value,
         launchAtLogin: launchAtLoginCheckbox.checked,
         enableStats: enableStatsCheckbox.checked,

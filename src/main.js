@@ -28,6 +28,7 @@ const store = new Store({
         language: 'zh',
         windowPosition: null, // 新增：记住窗口位置
         keepVisibleWhenUnfocused: false,  // 修改：重命名 alwaysOnTop
+        autoHideOnStart: false,  // 新增：点击开始后自动隐藏卡片
         appearance: {
             fontFamily: 'default', // 新增字体设置
             cardBg: '#f0f0f0',
@@ -551,6 +552,13 @@ ipcMain.handle('get-stats', () => {
 
 ipcMain.handle('get-system-fonts', () => {
     return getSystemFonts();
+});
+
+// 处理来自渲染进程的自动隐藏命令
+ipcMain.on('auto-hide-window', () => {
+    if (flyoutWindow && !flyoutWindow.isDestroyed() && flyoutWindow.isVisible() && currentSettings.autoHideOnStart) {
+        flyoutWindow.hide();
+    }
 });
 
 // Helper to update tooltip based on stored state

@@ -1,7 +1,7 @@
 {
   "name": "tomatotock",
   "version": "1.0.2",
-  "description": "A Pomodoro timer for Windows taskbar using Electron",
+  "description": "A Pomodoro timer for system tray using Electron",
   "main": "src/main.js",
   "scripts": {
     "start": "electron .",
@@ -38,23 +38,23 @@
       "icon": "build/icons/icon.ico",
       "artifactName": "${productName}-${version}-${arch}.${ext}"
     },
-    "mac": null,
-    "linux": null,
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": ["x64", "arm64"]
+        }
+      ],
+      "icon": "build/icons/icon.icns",
+      "category": "public.app-category.productivity",
+      "darkModeSupport": true
+    },
     "directories": {
       "output": "dist"
     },
     "files": [
       "src/**/*",
       "package.json"
-    ],
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true,
-      "installerIcon": "build/icons/icon.ico",
-      "uninstallerIcon": "build/icons/icon.ico",
-      "createDesktopShortcut": true,
-      "createStartMenuShortcut": true,
-      "shortcutName": "Tomatotock"
-    }
+    ]
   }
 }

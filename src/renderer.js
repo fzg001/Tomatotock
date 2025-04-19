@@ -182,6 +182,11 @@ function startTimer(type) {
         }
     }
 
+    // 如果开启了"开始后自动隐藏"选项，通知主进程隐藏窗口
+    if (currentSettings.autoHideOnStart) {
+        ipcRenderer.send('auto-hide-window');
+    }
+
     if (currentSettings.enableNotifications) {
         if (type === 'work') {
             ipcRenderer.send('show-notification', {
