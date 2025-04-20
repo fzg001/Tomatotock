@@ -4,7 +4,7 @@
 
 <div align="center">
 
-# Tomatotock 🍅
+# Tomatotock 
 
 **一个简单的系统托盘番茄钟计时器。**
 
@@ -12,8 +12,7 @@
 [![Version](https://img.shields.io/github/package-json/v/fzg001/tomatotock)](https://github.com/fzg001/Tomatotock/releases)
 [![Electron Version](https://img.shields.io/badge/electron-22.3.27-blue.svg)](https://www.electronjs.org/)
 [![Language](https://img.shields.io/badge/language-English%20%7C%20%E4%B8%AD%E6%96%87-blue)](README.md)
-[![状态](https://img.shields.io/badge/状态-活跃-success)](https://github.com/fzg001/Tomatotock)
-[![支持平台](https://img.shields.io/badge/platforms-Windows%7CmacOS-lightgrey)](https://github.com/fzg001/Tomatotock/releases)
+[![支持平台](https://img.shields.io/badge/platforms-Windows-lightgrey)](https://github.com/fzg001/Tomatotock/releases)
 [![番茄钟](https://img.shields.io/badge/番茄钟-25%20分钟-red)](https://zh.wikipedia.org/wiki/%E7%95%AA%E8%8C%84%E5%B7%A5%E4%BD%9C%E6%B3%95)
 
 

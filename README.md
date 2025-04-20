@@ -4,7 +4,7 @@
 
 <div align="center">
 
-# Tomatotock 🍅
+# Tomatotock 
 
 **A simple Pomodoro timer for the system tray.**
 
@@ -12,8 +12,7 @@
 [![Version](https://img.shields.io/github/package-json/v/fzg001/tomatotock)](https://github.com/fzg001/Tomatotock/releases)
 [![Electron Version](https://img.shields.io/badge/electron-22.3.27-blue.svg)](https://www.electronjs.org/)
 [![Language](https://img.shields.io/badge/language-English%20%7C%20%E4%B8%AD%E6%96%87-blue)](README.zh.md)
-[![Status](https://img.shields.io/badge/status-active-success)](https://github.com/fzg001/Tomatotock)
-[![Platforms](https://img.shields.io/badge/platforms-Windows%7CmacOS-lightgrey)](https://github.com/fzg001/Tomatotock/releases)
+[![Platforms](https://img.shields.io/badge/platforms-Windows-lightgrey)](https://github.com/fzg001/Tomatotock/releases)
 [![Pomodoro](https://img.shields.io/badge/pomodoro-25%20mins-red)](https://en.wikipedia.org/wiki/Pomodoro_Technique)
 
 </div>
