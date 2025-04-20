@@ -47,6 +47,41 @@ html, body {
     -webkit-app-region: drag; /* 允许拖动窗口 */
 }
 
+/* 小卡片模式样式 */
+.container.mini-card-mode {
+    padding: 8px 12px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    height: auto;
+}
+
+.mini-card-mode .timer-display {
+    font-size: 28px;
+    margin-bottom: 0;
+    margin-right: 12px;
+}
+
+.mini-card-mode .state-indicator {
+    font-size: 11px;
+    margin-bottom: 0;
+    white-space: nowrap;
+}
+
+.mini-card-mode .controls {
+    display: none;
+}
+
+/* 媒体查询：在小屏幕上进一步调整mini卡片样式 */
+@media (max-width: 300px) {
+    .mini-card-mode .timer-display {
+        font-size: 24px;
+    }
+    .mini-card-mode .state-indicator {
+        font-size: 10px;
+    }
+}
+
 /* Timer Display */
 .timer-display {
     font-size: 48px; /* Large timer font */

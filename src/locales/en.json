@@ -43,6 +43,7 @@
     "settings_launch_at_login": "Launch at Login:",
     "settings_pause_after_work": "Pause after Work Session:",
     "settings_auto_hide_on_start": "Auto Hide after Start:",
+    "settings_enable_mini_card_mode": "Enable Mini Card Mode:",
     "settings_save": "Save",
     "settings_cancel": "Cancel",
     "appearance_font_family": "Font Family:",

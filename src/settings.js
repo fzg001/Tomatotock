@@ -22,6 +22,7 @@ const fontFamilySelect = document.getElementById('appearance-font-family'); // �
 const launchAtLoginCheckbox = document.getElementById('launch-at-login'); // New
 const pauseAfterWorkCheckbox = document.getElementById('pause-after-work'); // New
 const autoHideOnStartCheckbox = document.getElementById('auto-hide-on-start'); // 新增
+const enableMiniCardModeCheckbox = document.getElementById('enable-mini-card-mode'); // 新增小卡片模式选项
 const enableStatsCheckbox = document.getElementById('enable-stats');
 const enableHotkeysCheckbox = document.getElementById('enable-hotkeys');
 const hotkeyStartPauseInput = document.getElementById('hotkey-start-pause');
@@ -258,6 +259,7 @@ function loadSettings(settings) {
     launchAtLoginCheckbox.checked = settings.launchAtLogin;
     pauseAfterWorkCheckbox.checked = settings.pauseAfterWork;
     autoHideOnStartCheckbox.checked = settings.autoHideOnStart !== false; // 新增
+    enableMiniCardModeCheckbox.checked = settings.enableMiniCardMode === true; // 新增小卡片模式
     enableStatsCheckbox.checked = settings.enableStats !== false;
     enableHotkeysCheckbox.checked = settings.enableHotkeys !== false;
     hotkeyStartPauseInput.value = settings.hotkeyStartPause || 'Ctrl+Alt+P';
@@ -366,6 +368,7 @@ saveButton.addEventListener('click', () => {
         customSoundComplete: currentSettings.customSoundComplete || '',
         pauseAfterWork: pauseAfterWorkCheckbox.checked, // Save new setting
         autoHideOnStart: autoHideOnStartCheckbox.checked, // 新增
+        enableMiniCardMode: enableMiniCardModeCheckbox.checked, // 新增小卡片模式设置
         language: languageSelect.value,
         launchAtLogin: launchAtLoginCheckbox.checked,
         enableStats: enableStatsCheckbox.checked,

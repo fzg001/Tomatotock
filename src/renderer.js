@@ -123,6 +123,11 @@ function updateDisplay() {
     let stateKey = 'state_idle';
     stateIndicator.className = 'state-indicator';
     container.className = 'container';
+    
+    // 添加小卡片模式类
+    if (currentSettings.enableMiniCardMode) {
+        container.classList.add('mini-card-mode');
+    }
 
     if (currentState !== 'idle') {
         stateKey = `state_${currentState}`;

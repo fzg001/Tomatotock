@@ -29,6 +29,7 @@ const store = new Store({
         windowPosition: null, // 新增：记住窗口位置
         keepVisibleWhenUnfocused: false,  // 修改：重命名 alwaysOnTop
         autoHideOnStart: false,  // 新增：点击开始后自动隐藏卡片
+        enableMiniCardMode: false, // 新增：小卡片模式
         appearance: {
             fontFamily: 'default', // 新增字体设置
             cardBg: '#f0f0f0',
@@ -97,9 +98,13 @@ const icons = {
 
 // --- Window Creation ---
 function createFlyoutWindow() {
+    // 根据是否启用小卡片模式调整窗口大小
+    const windowWidth = currentSettings.enableMiniCardMode ? 220 : 280;
+    const windowHeight = currentSettings.enableMiniCardMode ? 50 : 180;
+
     flyoutWindow = new BrowserWindow({
-        width: 280,
-        height: 180,
+        width: windowWidth,
+        height: windowHeight,
         show: false,
         frame: false,
         fullscreenable: false,
@@ -118,8 +123,11 @@ function createFlyoutWindow() {
 
     flyoutWindow.loadFile(path.join(__dirname, 'index.html'));
 
+    // 添加安全检查，确保窗口仍然存在且未被销毁
     flyoutWindow.webContents.on('did-finish-load', () => {
-        flyoutWindow.webContents.send('initialize-data', { settings: currentSettings, localeData: currentLocaleData });
+        if (flyoutWindow && !flyoutWindow.isDestroyed()) {
+            flyoutWindow.webContents.send('initialize-data', { settings: currentSettings, localeData: currentLocaleData });
+        }
     });
 
     // 修改：仅在非置顶模式下点击其他位置时才隐藏窗口
@@ -356,12 +364,16 @@ function registerGlobalShortcuts(settings) {
     if (!settings.enableHotkeys) return;
     if (settings.hotkeyStartPause) {
         globalShortcut.register(settings.hotkeyStartPause, () => {
-            if (flyoutWindow) flyoutWindow.webContents.send('hotkey-start-pause');
+            if (flyoutWindow && !flyoutWindow.isDestroyed()) {
+                flyoutWindow.webContents.send('hotkey-start-pause');
+            }
         });
     }
     if (settings.hotkeyReset) {
         globalShortcut.register(settings.hotkeyReset, () => {
-            if (flyoutWindow) flyoutWindow.webContents.send('hotkey-reset');
+            if (flyoutWindow && !flyoutWindow.isDestroyed()) {
+                flyoutWindow.webContents.send('hotkey-reset');
+            }
         });
     }
 }
@@ -469,13 +481,9 @@ ipcMain.on('save-settings', (event, newSettings) => {
         ...store.get(), // 用当前存储的设置为基础
         ...newSettings
     };
-    // 确保 keepVisibleWhenUnfocused 也被正确合并（如果它在 newSettings 中）
-    if (newSettings.hasOwnProperty('keepVisibleWhenUnfocused')) {
-        completeSettings.keepVisibleWhenUnfocused = newSettings.keepVisibleWhenUnfocused;
-    } else {
-        // 如果 newSettings 中没有，则从 store 中获取旧值
-        completeSettings.keepVisibleWhenUnfocused = store.get('keepVisibleWhenUnfocused', false); // 提供默认值
-    }
+
+    // 如果小卡片模式设置变化，重新创建窗口
+    const miniCardModeChanged = currentSettings.enableMiniCardMode !== newSettings.enableMiniCardMode;
 
     store.set(completeSettings);
     currentSettings = completeSettings; // 更新当前设置缓存
@@ -502,8 +510,38 @@ ipcMain.on('save-settings', (event, newSettings) => {
 
     registerGlobalShortcuts(currentSettings); // 重新注册快捷键
 
-    // 更新窗口的 alwaysOnTop 状态
-    if (flyoutWindow && !flyoutWindow.isDestroyed()) {
+    // 如果小卡片模式设置变化，需要重新创建窗口以适应新尺寸
+    if (miniCardModeChanged && flyoutWindow && !flyoutWindow.isDestroyed()) {
+        try {
+            const windowPosition = flyoutWindow.getPosition();
+            const isVisible = flyoutWindow.isVisible();
+            
+            // 正确关闭旧窗口
+            flyoutWindow.removeAllListeners();
+            flyoutWindow.close();
+            
+            // 等待窗口真正关闭后再创建新窗口
+            setTimeout(() => {
+                flyoutWindow = null;
+                createFlyoutWindow();
+                
+                // 确保新窗口创建完成后才设置位置和显示
+                if (flyoutWindow) {
+                    flyoutWindow.once('ready-to-show', () => {
+                        if (flyoutWindow && !flyoutWindow.isDestroyed()) {
+                            flyoutWindow.setPosition(windowPosition[0], windowPosition[1]);
+                            if (isVisible) {
+                                flyoutWindow.show();
+                            }
+                        }
+                    });
+                }
+            }, 100); // 给窗口留出100ms的时间来关闭
+        } catch (error) {
+            console.error('重新创建窗口时出错:', error);
+        }
+    } else if (flyoutWindow && !flyoutWindow.isDestroyed()) {
+        // 添加安全检查，确保窗口仍然存在且未被销毁
         flyoutWindow.setAlwaysOnTop(currentSettings.keepVisibleWhenUnfocused);
         flyoutWindow.webContents.send('settings-updated', { settings: currentSettings, localeData: currentLocaleData });
     }
