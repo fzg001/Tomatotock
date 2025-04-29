@@ -111,7 +111,8 @@ function createFlyoutWindow() {
         resizable: false,
         movable: true, // 改为true，允许窗口移动
         transparent: true,
-        alwaysOnTop: currentSettings.keepVisibleWhenUnfocused, // 修改：使用新设置
+        // 修改：使用更明确的置顶级别
+        alwaysOnTop: currentSettings.keepVisibleWhenUnfocused, 
         skipTaskbar: true,
         webPreferences: {
             nodeIntegration: true,
@@ -120,6 +121,12 @@ function createFlyoutWindow() {
         },
         icon: icons.appIcon
     });
+
+    // 设置具体的置顶级别
+    if (currentSettings.keepVisibleWhenUnfocused) {
+        flyoutWindow.setAlwaysOnTop(true, 'floating'); 
+    }
+
 
     flyoutWindow.loadFile(path.join(__dirname, 'index.html'));
 
@@ -130,11 +137,14 @@ function createFlyoutWindow() {
         }
     });
 
-    // 修改：仅在非置顶模式下点击其他位置时才隐藏窗口
+    // 修改：blur 事件处理逻辑，增加 moveTop()
     flyoutWindow.on('blur', () => {
-        if (flyoutWindow && !flyoutWindow.webContents.isDevToolsFocused()) {
-            // 修改：仅在 keepVisibleWhenUnfocused 为 false 时隐藏
-            if (!currentSettings.keepVisibleWhenUnfocused) {
+        if (flyoutWindow && !flyoutWindow.isDestroyed() && !flyoutWindow.webContents.isDevToolsFocused()) {
+            if (currentSettings.keepVisibleWhenUnfocused) {
+                // 尝试强制将窗口移到顶部，看是否能覆盖任务栏
+                flyoutWindow.moveTop(); 
+            } else {
+                // 仅在 keepVisibleWhenUnfocused 为 false 时隐藏
                 flyoutWindow.hide();
             }
         }
@@ -254,7 +264,8 @@ function buildContextMenu() {
             click: () => {
                 currentSettings.keepVisibleWhenUnfocused = !currentSettings.keepVisibleWhenUnfocused; // 修改：切换新设置
                 if (flyoutWindow) {
-                    flyoutWindow.setAlwaysOnTop(currentSettings.keepVisibleWhenUnfocused); // 保持 alwaysOnTop 行为，因为这是 Electron 控制窗口是否置顶的属性
+                    // 修改：设置具体的置顶级别
+                    flyoutWindow.setAlwaysOnTop(currentSettings.keepVisibleWhenUnfocused, 'floating'); 
 
                     // 如果切换到非置顶状态且窗口当前没有焦点，则需要隐藏窗口
                     if (!currentSettings.keepVisibleWhenUnfocused && !flyoutWindow.isFocused()) {
@@ -474,6 +485,7 @@ ipcMain.handle('select-file', async (event) => {
     return null;
 });
 
+// 处理设置保存，确保 alwaysOnTop 状态正确应用
 ipcMain.on('save-settings', (event, newSettings) => {
     console.log('正在保存设置:', newSettings);
     // 修正：不要用 ...store.defaults，应该用 store.get() 或直接合并默认对象
@@ -484,6 +496,9 @@ ipcMain.on('save-settings', (event, newSettings) => {
 
     // 如果小卡片模式设置变化，重新创建窗口
     const miniCardModeChanged = currentSettings.enableMiniCardMode !== newSettings.enableMiniCardMode;
+
+    // 检查置顶设置是否变化
+    const keepVisibleChanged = currentSettings.keepVisibleWhenUnfocused !== newSettings.keepVisibleWhenUnfocused;
 
     store.set(completeSettings);
     currentSettings = completeSettings; // 更新当前设置缓存
@@ -541,8 +556,11 @@ ipcMain.on('save-settings', (event, newSettings) => {
             console.error('重新创建窗口时出错:', error);
         }
     } else if (flyoutWindow && !flyoutWindow.isDestroyed()) {
-        // 添加安全检查，确保窗口仍然存在且未被销毁
-        flyoutWindow.setAlwaysOnTop(currentSettings.keepVisibleWhenUnfocused);
+        // 如果窗口未重新创建，但置顶设置变化了，则更新置顶状态
+        if (keepVisibleChanged) {
+             flyoutWindow.setAlwaysOnTop(currentSettings.keepVisibleWhenUnfocused, 'floating');
+        }
+        // 发送更新通知给渲染进程
         flyoutWindow.webContents.send('settings-updated', { settings: currentSettings, localeData: currentLocaleData });
     }
 });
